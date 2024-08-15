@@ -1,7 +1,14 @@
 package org.chatServ;
 
-import lombok.AllArgsConstructor;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import lombok.extern.log4j.Log4j2;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+//import org.json.JSObject;
+import netscape.javascript.JSObject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -22,22 +29,17 @@ class ThreadedEchoHandler implements Runnable{
     }
     public void run() {
         String line, command, user="", message="", receiver="";
-
-
         try {
-
             try {
                 InputStream inStream = incoming.getInputStream();
                 OutputStream outStream = incoming.getOutputStream();
-
                 BufferedReader brNet = new BufferedReader(new InputStreamReader(inStream));
                 outNet = new PrintWriter(outStream, true);
 
                 done= true;
                 while (done) {
 
-                    /**
-                     * Формирует полный запрос от клиента:
+                    /** Формирует полный запрос от клиента:
                      * command, user, message.
                      * При неудаче начинает сначала.
                      */
@@ -68,20 +70,15 @@ class ThreadedEchoHandler implements Runnable{
                             receiver=StringUtils.removeStart(command, "chattingTo");
                             command="chattingTo";
                         }
-
                         send_response_for_request ( command,  user,  message, receiver);
-
-
-
                     }
 
-
                 }
-
-
-            } finally {
+            }
+            finally {
                 incoming.close();
                 log.info("{} - is closed " , incoming);
+
             }
         } catch (IOException e) {
             log.error(e);
@@ -105,7 +102,10 @@ class ThreadedEchoHandler implements Runnable{
                             } else {
                                 echoServer.getUserListOnline().put(user, incoming);
                                 outNet.println("OK");
-                                System.out.println("now online- "+echoServer.getUserListOnline());
+                                log.info("{} - now online " , echoServer.getUserListOnline());
+                                echoServer.getReferenceBook().put(user, true);
+                                referenceBook_to_JSON ();
+                                //  разослать новый справочник всем онлайн
                             }
                         }else {
                             outNet.println("NoPassword");
@@ -121,15 +121,45 @@ class ThreadedEchoHandler implements Runnable{
                         outNet.println("BUSY");
                     }else{
                         echoServer.getUserListRegistration().put(user,message);
+                        echoServer.getReferenceBook().put(user, false);
                         outNet.println("OK");
+                        referenceBook_to_JSON ();
+                        //разослать новый справочник всем онлайн
                     }
                     done=false;
                 }
                 case "chattingTo"->{
 
                 }
+                case "exit"->{
+                    done=false;
+                    echoServer.getUserListOnline().remove(user);
+                    echoServer.getReferenceBook().put(user, false);
+                    referenceBook_to_JSON ();
+                    //разослать новый справочник всем онлайн
+                }
+
             }
         }
+    }
+
+    String referenceBook_to_JSON (){
+         HashMap<String, Boolean> map= echoServer.getReferenceBook();
+        String referenceBookJson=null;
+        ObjectMapper mapper = new ObjectMapper();
+
+        // Converting map to a JSON payload as string
+        try {
+            referenceBookJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+            log.info("{} - reference Book " ,referenceBookJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        return referenceBookJson;
     }
 
 

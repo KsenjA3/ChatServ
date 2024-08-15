@@ -21,13 +21,27 @@ import java.util.HashMap;
 @Log4j2
 public class ThreadedEchoServer {
     static final  int port = 8189;
-
+    /**list registration
+     * String - name user
+     * String - password
+     */
     private HashMap<String, String> userListRegistration;
+    /**list user online
+     * String - name user
+     * Socket - Socket connection
+     */
     private HashMap<String, Socket> userListOnline;
+
+    private HashMap<String, Boolean> referenceBook ;
+    /** reference book
+     *String - name user
+     *String - marker online
+     */
 
     ThreadedEchoServer() {
         userListRegistration= new HashMap<>();
         userListOnline=new HashMap<>();
+        referenceBook =new HashMap<>();
     }
 
     public static void main(String[] args)  {
