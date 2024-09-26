@@ -21,6 +21,7 @@ import java.util.HashMap;
 @Log4j2
 public class ThreadedEchoServer {
     static final  int port = 8189;
+
     /**list registration
      * String - name user
      * String - password
@@ -31,12 +32,11 @@ public class ThreadedEchoServer {
      * Socket - Socket connection
      */
     private HashMap<String, Socket> userListOnline;
-
-    private HashMap<String, Boolean> referenceBook ;
     /** reference book
      *String - name user
      *String - marker online
      */
+    private HashMap<String, Boolean> referenceBook ;
 
     ThreadedEchoServer() {
         userListRegistration= new HashMap<>();
@@ -47,6 +47,8 @@ public class ThreadedEchoServer {
     public static void main(String[] args)  {
 
         ThreadedEchoServer echoServer = new ThreadedEchoServer();
+        Db db = new Db();
+        db.createUserDB (echoServer);
 
 // установить сокет на стороне сервера
         try (ServerSocket s = new ServerSocket(port))
@@ -56,10 +58,12 @@ public class ThreadedEchoServer {
 // ожидает подключение клиента
                 Socket incoming = s.accept();
                 log.info("Spawning {}" , i);
+
                 Runnable r = new ThreadedEchoHandler(incoming , echoServer);
                 Thread t = new Thread(r);
                 t .start ();
                 i++;
+
             }
         }
 

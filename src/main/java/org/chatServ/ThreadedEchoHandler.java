@@ -4,6 +4,7 @@ package org.chatServ;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.net.*;
 import java.util.*;
 
 @Log4j2
+
 class ThreadedEchoHandler implements Runnable{
     private Socket incoming;
     private ThreadedEchoServer echoServer;
@@ -45,6 +47,7 @@ class ThreadedEchoHandler implements Runnable{
                      */
                     while (brNet.ready()) {
                         line=brNet.readLine();
+
                         if (StringUtils.startsWith(line,"command:")){
                             command=StringUtils.removeStart(line, "command:");
 
@@ -55,8 +58,8 @@ class ThreadedEchoHandler implements Runnable{
 
                                     if (brNet.ready()) {
                                         line = brNet.readLine();
-                                        if (StringUtils.startsWith(line, "message")) {
-                                            message = StringUtils.removeStart(line, "message");
+                                        if (StringUtils.startsWith(line, "message:")) {
+                                            message = StringUtils.removeStart(line, "message:");
                                         }
                                     }
                                 }
@@ -66,9 +69,9 @@ class ThreadedEchoHandler implements Runnable{
                         /**Выделяет получателя при передаче сообщения
                          *
                          */
-                        if (StringUtils.startsWith(command,"chattingTo")){
-                            receiver=StringUtils.removeStart(command, "chattingTo");
-                            command="chattingTo";
+                        if (StringUtils.startsWith(command,"chattingTo:")){
+                            receiver=StringUtils.removeStart(command, "chattingTo:");
+                            command="chattingTo:";
                         }
                         send_response_for_request ( command,  user,  message, receiver);
                     }
@@ -91,6 +94,7 @@ class ThreadedEchoHandler implements Runnable{
 
     void send_response_for_request (String command, String user, String message, String receiver) {
         if (!StringUtils.isEmpty(user) && !StringUtils.isEmpty(message)) {
+            Db db = new Db();
             switch (command){
                 case "in account"->{
                     if ( echoServer.getUserListRegistration().containsKey(user)) {
@@ -104,8 +108,12 @@ class ThreadedEchoHandler implements Runnable{
                                 outNet.println("OK");
                                 log.info("{} - now online " , echoServer.getUserListOnline());
                                 echoServer.getReferenceBook().put(user, true);
-                                referenceBook_to_JSON ();
-                                //  разослать новый справочник всем онлайн
+
+                                //true to db_users.is_onliner
+                                db.updateOnline(user,true);
+
+                                //разослать новый справочник всем онлайн
+                                send_referenceBook ();
                             }
                         }else {
                             outNet.println("NoPassword");
@@ -123,8 +131,13 @@ class ThreadedEchoHandler implements Runnable{
                         echoServer.getUserListRegistration().put(user,message);
                         echoServer.getReferenceBook().put(user, false);
                         outNet.println("OK");
-                        referenceBook_to_JSON ();
+
+                        //add to db_users.users
+                        db.addUser(user,message);
+
                         //разослать новый справочник всем онлайн
+                        send_referenceBook ();
+
                     }
                     done=false;
                 }
@@ -135,8 +148,8 @@ class ThreadedEchoHandler implements Runnable{
                     done=false;
                     echoServer.getUserListOnline().remove(user);
                     echoServer.getReferenceBook().put(user, false);
-                    referenceBook_to_JSON ();
-                    //разослать новый справочник всем онлайн
+                    //false to db_users.is_onliner
+                    db.updateOnline(user,false);
                 }
 
             }
@@ -150,7 +163,8 @@ class ThreadedEchoHandler implements Runnable{
 
         // Converting map to a JSON payload as string
         try {
-            referenceBookJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+            referenceBookJson = mapper.writeValueAsString(map);
+//                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
             log.info("{} - reference Book " ,referenceBookJson);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -162,5 +176,56 @@ class ThreadedEchoHandler implements Runnable{
         return referenceBookJson;
     }
 
+
+
+    @SneakyThrows(InterruptedException.class)
+    void  send_referenceBook ()  {
+        Thread.sleep(100);
+        String txt= "message:"+referenceBook_to_JSON ();
+        System.out.println("__________________________________");
+        echoServer.getUserListOnline().forEach((user,socket) -> {
+           try{
+               System.out.println(user);
+               System.out.println(socket);
+           PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+               System.out.println(out);
+            out.println("command:referenceBook");
+            out.println("user:server");
+               System.out.println(txt);
+            out.println(txt);
+
+        } catch (IOException e) {
+            log.error(e);
+            e.printStackTrace();
+        }
+        });
+    }
+
+
+    void send_message(Socket s,  String command,String from_user,String message,String to_use) throws InterruptedException {
+        BufferedReader brNet;
+        PrintWriter outNet;
+        try{
+            brNet = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            outNet = new PrintWriter(s.getOutputStream(), true);
+
+            outNet.println("command:"+command);
+            outNet.println("user:"+from_user);
+            outNet.println("message"+message);
+            outNet.flush();
+
+            s.setSoTimeout(1000000000);
+            Thread.sleep(100);
+            if (brNet.ready()) {
+                String response_command=brNet.readLine().trim();
+                String response_user=brNet.readLine().trim();
+                String response_message=brNet.readLine().trim();
+
+//                if ()
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
