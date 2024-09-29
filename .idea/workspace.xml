@@ -4,17 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="def5cf4e-d77c-46ee-b382-7aa81cf06eb3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/log4j2.xml" afterDir="false" />
+    <list default="true" id="def5cf4e-d77c-46ee-b382-7aa81cf06eb3" name="Changes" comment="1">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/hibernateTest.cfg.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/chatServ/DbTestH2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/AccessDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/AccessDB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Connector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Connector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Db.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Db.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Messages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Users.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/chatServ/DbTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/chatServ/DbTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/chatServ/DbTestQuery.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,15 +29,22 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="JUnit5 Test Class" />
+        <option value="XML Properties File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2kL7PDeDEN03NSVcdhT47dRO3UO" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -42,14 +53,115 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.Main.executor": "Run",
     "Application.ThreadedEchoServer.executor": "Run",
+    "JUnit.DbTest.createUserDB.executor": "Run",
+    "JUnit.DbTestConnect.addMessageFromUser.executor": "Run",
+    "JUnit.DbTestH2.addMessageFromUser.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "dart.analysis.tool.window.visible": "false",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/JavaProjects/TestMaven",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="org.chatServ" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.DbTestH2.addMessageFromUser">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.chatServ.Main" />
+      <module name="ChatServ1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.chatServ.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ThreadedEchoServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.chatServ.ThreadedEchoServer" />
+      <module name="ChatServ1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.chatServ.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DbTestH2.addMessageFromUser" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="ChatServ1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.chatServ.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.chatServ" />
+      <option name="MAIN_CLASS_NAME" value="org.chatServ.DbTestH2" />
+      <option name="METHOD_NAME" value="addMessageFromUser" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DbTestH2.createUserDB" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="ChatServ1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.chatServ.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.chatServ" />
+      <option name="MAIN_CLASS_NAME" value="org.chatServ.DbTestH2" />
+      <option name="METHOD_NAME" value="createUserDB" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DbTest.createUserDB" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="ChatServ1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.chatServ.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.chatServ" />
+      <option name="MAIN_CLASS_NAME" value="org.chatServ.DbTest" />
+      <option name="METHOD_NAME" value="createUserDB" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.DbTestH2.addMessageFromUser" />
+        <item itemvalue="Application.Main" />
+        <item itemvalue="Application.ThreadedEchoServer" />
+        <item itemvalue="JUnit.DbTestH2.createUserDB" />
+        <item itemvalue="JUnit.DbTest.createUserDB" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -59,6 +171,81 @@
       <option name="presentableId" value="Default" />
       <updated>1723050978613</updated>
     </task>
+    <task id="LOCAL-00001" summary="init">
+      <option name="closed" value="true" />
+      <created>1723051973761</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1723051973762</updated>
+    </task>
+    <task id="LOCAL-00002" summary="referenceBook">
+      <option name="closed" value="true" />
+      <created>1723705974434</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1723705974434</updated>
+    </task>
+    <task id="LOCAL-00003" summary="createDB_users">
+      <option name="closed" value="true" />
+      <created>1727334348253</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1727334348253</updated>
+    </task>
+    <task id="LOCAL-00004" summary="createDB_users">
+      <option name="closed" value="true" />
+      <created>1727415534198</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1727415534198</updated>
+    </task>
+    <task id="LOCAL-00005" summary="1">
+      <option name="closed" value="true" />
+      <created>1727425614973</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1727425614973</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init" />
+    <MESSAGE value="referenceBook" />
+    <MESSAGE value="createDB_users" />
+    <MESSAGE value="1" />
+    <option name="LAST_COMMIT_MESSAGE" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>144</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>79</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

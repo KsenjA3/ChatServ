@@ -7,13 +7,20 @@ import org.hibernate.cfg.Configuration;
 class Connector {
     SessionFactory sessionFactory;
 
-    public Connector() {
-        sessionFactory= new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+    public Connector(String path) {
+//        sessionFactory= new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+
+        sessionFactory= new Configuration()
+                .configure(path)
+                .addAnnotatedClass(Users.class)
+                .addAnnotatedClass(Messages.class)
+                .buildSessionFactory();
     }
 
 
 
     public Session getSession() {
+//        return sessionFactory.getCurrentSession();
         return sessionFactory.openSession();
     }
 }

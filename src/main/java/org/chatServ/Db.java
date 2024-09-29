@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,12 +14,12 @@ class Db {
     private final Connector connector;
     protected HashMap<String, String> userListRegistration;
     protected HashMap<String, Boolean> referenceBook ;
-    List<Users> users;
+    protected List<Users> users;
+    private Users u;
+    private Messages mess;
 
-
-
-    Db (){
-        connector = new Connector();
+    Db (String path){
+        connector = new Connector(path);
     }
 
     void createUserDB ( ThreadedEchoServer echoServer){
@@ -48,7 +49,7 @@ class Db {
 
     void addUser (String user_name, String password){
         try (Session session= connector.getSession()) {
-            Users u = new Users(user_name, password, false);
+            u = new Users(user_name, password, false);
             session.beginTransaction();
             session.persist(u);
             session.getTransaction().commit();
@@ -62,11 +63,23 @@ class Db {
             String hql = " FROM Users WHERE user_name = :user_name";
             Query<Users> query = session.createQuery(hql, Users.class);
             query.setParameter("user_name", user_name);
-            Users users = query.getSingleResult();
-            users.setIs_online(isOnline);
+            u = query.getSingleResult();
+            u.setIs_online(isOnline);
 
             session.beginTransaction();
-            session.persist(users);
+            session.persist(u);
+            session.getTransaction().commit();
+        }
+    }
+
+
+    void addMessage (String message,  String from_user, String to_user){
+        LocalDateTime time_send = LocalDateTime.now();
+
+        try (Session session= connector.getSession()) {
+            mess= new Messages(message,  time_send,  false, null);
+            session.beginTransaction();
+            session.persist(mess);
             session.getTransaction().commit();
         }
     }

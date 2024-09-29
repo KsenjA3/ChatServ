@@ -3,9 +3,11 @@ package org.chatServ;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-@Data
+
 @Entity
 @Table(name= "users")
 public class Users {
@@ -16,19 +18,19 @@ public class Users {
 
     @Column(name="user_name",nullable = false)
     private String user_name;
+
     @Column(name="password",nullable = false)
     private String password;
+
     @Column(name="is_online",nullable = false)
     private boolean is_online;
 
-    @OneToMany (fetch = FetchType.LAZY)
-    @JoinColumn (name = "message_id", unique = true)
-    private Set<Messages> messages;
+    @OneToMany (mappedBy = "from_user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JoinColumn (name = "message_id", unique = true)
+    private List<Messages> messages;
 
 
-    public Users() {
-
-    }
+    public Users() {   }
 
     public Users(String user_name, String password, boolean is_online) {
         this.user_name = user_name;
@@ -52,9 +54,7 @@ public class Users {
         return is_online;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setId(int id) { this.id = id;  }
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
@@ -66,5 +66,27 @@ public class Users {
 
     public void setIs_online(boolean is_online) {
         this.is_online = is_online;
+    }
+
+    public List<Messages> getMessages() { return messages;  }
+
+    public void setMessages(List<Messages> messages) {   this.messages = messages;  }
+
+    public void addMessageFromUser( Messages mess) {
+        if (messages==null)
+            messages=new ArrayList<>();
+        messages.add(mess);
+        mess.setFrom_user(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "id=" + id +
+                ", user_name='" + user_name + '\'' +
+                ", password='" + password + '\'' +
+                ", is_online=" + is_online +
+//                ", messages=" + messages +
+                '}';
     }
 }

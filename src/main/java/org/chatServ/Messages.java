@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
+
 @Entity
 @Table(name= "messages")
 public class Messages {
@@ -17,39 +17,44 @@ public class Messages {
     @Column(name="message",nullable = false)
     private String message;
 
-    @Column(name="time", nullable = false)
+    @Column(name="time_send", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime time;
-
-//    @Column(name="from_user")
-//    private String from_user;
-//    @Column(name="to_user")
-//    private String to_user;
+    private LocalDateTime time_send;
 
     @Column(name="is_got")
     private boolean is_got;
 
+    @Column(name="time_receive")
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime time_receive;
+
     @ManyToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn (name="from_user", nullable = false)
     private Users from_user;
+//
+//    @ManyToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn (name="to_user", nullable = false)
+//    private Users to_user;
 
-    @ManyToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn (name="to_user", nullable = false)
-    private Users to_user;
 
-
-    public Messages(String message, LocalDateTime time, String from_user, String to_user, boolean is_got) {
+    public Messages(String message, LocalDateTime time_send, boolean is_got, LocalDateTime time_receive) {
         this.message = message;
-        this.time = time;
+        this.time_send = time_send;
+        this.time_receive = time_receive;
         this.is_got = is_got;
-
-//        this.from_user = from_user;
-//        this.to_user = to_user;
-
     }
 
-    public Messages() {
+    public Messages(String message, LocalDateTime time_send, boolean is_got) {
+        this.message = message;
+        this.time_send = time_send;
+        this.is_got = is_got;
     }
+
+    public Messages() {  }
+
+    public Users getFrom_user() { return from_user; }
+
+    public void setFrom_user(Users from_user) {  this.from_user = from_user;  }
 
     public int getId() {
         return id;
@@ -58,18 +63,6 @@ public class Messages {
     public String getMessage() {
         return message;
     }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-//    public String getFrom_user() {
-//        return from_user;
-//    }
-//
-//    public String getTo_user() {
-//        return to_user;
-//    }
 
     public boolean isIs_got() {
         return is_got;
@@ -83,19 +76,27 @@ public class Messages {
         this.message = message;
     }
 
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-//    public void setFrom_user(String from_user) {
-//        this.from_user = from_user;
-//    }
-//
-//    public void setTo_user(String to_user) {
-//        this.to_user = to_user;
-//    }
-
     public void setIs_got(boolean is_got) {
         this.is_got = is_got;
+    }
+
+    public LocalDateTime getTime_receive() { return time_receive;  }
+
+    public LocalDateTime getTime_send() { return time_send; }
+
+    public void setTime_receive(LocalDateTime time_receive) {this.time_receive = time_receive; }
+
+    public void setTime_send(LocalDateTime time_send) { this.time_send = time_send; }
+
+    @Override
+    public String toString() {
+        return "Messages{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", time_send=" + time_send +
+                ", is_got=" + is_got +
+                ", time_receive=" + time_receive +
+                ", from_user=" + from_user +
+                '}';
     }
 }

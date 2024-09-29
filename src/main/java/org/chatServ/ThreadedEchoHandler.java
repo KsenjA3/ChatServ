@@ -94,7 +94,7 @@ class ThreadedEchoHandler implements Runnable{
 
     void send_response_for_request (String command, String user, String message, String receiver) {
         if (!StringUtils.isEmpty(user) && !StringUtils.isEmpty(message)) {
-            Db db = new Db();
+            Db db = new Db("hibernate.cfg.xml");
             switch (command){
                 case "in account"->{
                     if ( echoServer.getUserListRegistration().containsKey(user)) {
@@ -142,7 +142,7 @@ class ThreadedEchoHandler implements Runnable{
                     done=false;
                 }
                 case "chattingTo"->{
-
+                    db.updateOnline(user,true);
                 }
                 case "exit"->{
                     done=false;
@@ -169,29 +169,18 @@ class ThreadedEchoHandler implements Runnable{
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
-
-
-
         return referenceBookJson;
     }
-
-
 
     @SneakyThrows(InterruptedException.class)
     void  send_referenceBook ()  {
         Thread.sleep(100);
         String txt= "message:"+referenceBook_to_JSON ();
-        System.out.println("__________________________________");
         echoServer.getUserListOnline().forEach((user,socket) -> {
            try{
-               System.out.println(user);
-               System.out.println(socket);
            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-               System.out.println(out);
             out.println("command:referenceBook");
             out.println("user:server");
-               System.out.println(txt);
             out.println(txt);
 
         } catch (IOException e) {
@@ -206,20 +195,20 @@ class ThreadedEchoHandler implements Runnable{
         BufferedReader brNet;
         PrintWriter outNet;
         try{
-            brNet = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            outNet = new PrintWriter(s.getOutputStream(), true);
+            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            PrintWriter out = new PrintWriter(s.getOutputStream(), true);
 
-            outNet.println("command:"+command);
-            outNet.println("user:"+from_user);
-            outNet.println("message"+message);
-            outNet.flush();
+            out.println("command:"+command);
+            out.println("user:"+from_user);
+            out.println("message:"+message);
+            out.flush();
 
             s.setSoTimeout(1000000000);
             Thread.sleep(100);
-            if (brNet.ready()) {
-                String response_command=brNet.readLine().trim();
-                String response_user=brNet.readLine().trim();
-                String response_message=brNet.readLine().trim();
+            if (br.ready()) {
+                String response_command=br.readLine().trim();
+                String response_user=br.readLine().trim();
+                String response_message=br.readLine().trim();
 
 //                if ()
             }

@@ -1,91 +1,57 @@
 package org.chatServ;
 
-
 import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
-@ExtendWith(MockitoExtension.class)
 class DbTest {
+    private static SessionFactory sessionFactory;
+    private static Session session;
 
-    Db db;
-    HashMap<String, String> listRegistration;
-    List<Users> us;
+    private static Db db;
+    private static Users user1, user2;
+    private static Messages mess1,mess11, mess2,mess22 ;
 
-    @Mock
-    Connector connector;
 
-    @Mock
-    Session session;
+    @BeforeAll
+    static void beforeAll() {
+        Connector con = new Connector("hibernateTest.cfg.xml");
+        sessionFactory = con.sessionFactory;
 
-    @Mock
-    Query query;
+        db = new Db("hibernateTest.cfg.xml");
+    }
 
+    @AfterAll
+    static void afterAll() {
+        if (sessionFactory != null) sessionFactory.close();
+    }
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        db = new Db();
-        listRegistration= new HashMap<>();
-
-        Mockito.when(connector.getSession()).thenReturn(session);
-
-//        Transaction transaction = null;
-//        Mockito.when(session.beginTransaction()).thenReturn(transaction);
-//        Mockito.when(session.getTransaction()).thenReturn(transaction);
+    void openSession() {
+        session = sessionFactory.openSession();
     }
 
     @AfterEach
-    void tearDown() {
+    void closeSession() {
+        if (session != null) session.close();
     }
+
 
     @Test
     void createUserDB() {
-        us= new ArrayList<>();
-        Users user = new Users("111","aaa", true);
-        us.add(user) ;
-        user = new Users("222","bbb", false);
-        us.add(user) ;
-        user = new Users("333","ccc", true);
-        us.add(user) ;
-
-//        Mockito.when(session.createQuery(ArgumentMatchers.anyString(), any() )).thenReturn(query);
-        Mockito.when(session.createQuery(ArgumentMatchers.anyString(), any() )).thenReturn(query);
-        Mockito.verify(session.createQuery(ArgumentMatchers.anyString(), any() ));
-
-//        Mockito.when(query.getResultList()).thenReturn(us);
-        Mockito.doReturn(us).when(query).getResultList();
-        Mockito.verify(query.getResultList());
-
-//        db.createUserDB(listRegistration);
-
-//        assertEquals("aaa", db.users.get(0).getPassword());
     }
 
     @Test
     void addUser() {
-        db.addUser ("addUser", "www");
-        assertEquals("aaa", db.users.get(0).getPassword());
     }
 
     @Test
     void updateOnline() {
+    }
+
+    @Test
+    void addMessage() {
     }
 }

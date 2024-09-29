@@ -47,7 +47,7 @@ public class ThreadedEchoServer {
     public static void main(String[] args)  {
 
         ThreadedEchoServer echoServer = new ThreadedEchoServer();
-        Db db = new Db();
+        Db db = new Db("hibernate.cfg.xml");
         db.createUserDB (echoServer);
 
 // установить сокет на стороне сервера
