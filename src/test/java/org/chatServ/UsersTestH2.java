@@ -24,11 +24,11 @@ class UsersTestH2 {
 
         db = new Db("hibernateTest.cfg.xml");
         LocalDateTime time1 = LocalDateTime.now();
-        user1 = new Users("111", "aaa", true);
+        user1 = new Users("user1", "aaa", true);
         mess1= new Messages("message1",  time1,  false);
         mess11= new Messages("message11",  time1,  false);
 
-        user2= new Users("222", "bbb", false);
+        user2= new Users("user2", "bbb", false);
         LocalDateTime time2 = LocalDateTime.now();
         mess2= new Messages("message2",  time1,  false, time2);
         mess22= new Messages("message22",  time1,  false, time2);
@@ -42,6 +42,7 @@ class UsersTestH2 {
     @BeforeEach
     void openSession() {
         session = sessionFactory.openSession();
+
     }
 
     @AfterEach
@@ -53,19 +54,47 @@ class UsersTestH2 {
     void addMessageFromUser() {
         user1.addMessageFromUser(mess1);
         user1.addMessageFromUser(mess11);
+        user2.addMessageToUser(mess1);
+        user2.addMessageToUser(mess11);
+
         user2.addMessageFromUser(mess2);
         user2.addMessageFromUser(mess22);
+        user1.addMessageToUser(mess2);
+        user1.addMessageToUser(mess22);
 
         session.beginTransaction();
         session.persist(user1);
         session.persist(user2);
         session.getTransaction().commit();
 
-        String command = "FROM Users WHERE user_name = :user_name";
-        Query<Users> query = session.createQuery(command, Users.class);
-        query.setParameter("user_name", "111");
+        String command = "FROM Users WHERE userName = :userName";
+        Query<Users> queryU = session.createQuery(command, Users.class);
+        queryU.setParameter("userName", "user1");
+        Users user_1= queryU.getSingleResult();
+        assertEquals("message1", user_1.getMessagesFrom().get(0).getMess());
 
-        assertEquals("message1", query.getSingleResult().getMessages().get(0).getMessage());
+        command = "FROM Messages WHERE mess = :mess";
+        Query<Messages> queryM = session.createQuery(command, Messages.class);
+        queryM.setParameter("mess", "message11");
+        Messages mess_11 = queryM.getSingleResult();
+        assertEquals("user1", mess_11.getFromUser().getUserName());
+
+        int id_user = user_1.getId();
+        int id_mess = mess_11.getId();
+        System.out.println("id_user= "+id_user);
+        System.out.println("id_mess= "+id_mess);
+        command = """
+                FROM Messages m
+                WHERE 
+                    m.id != :id
+                    AND 
+                    m.fromUser.id = :fromUser            
+                """;
+        queryM = session.createQuery(command, Messages.class);
+        queryM.setParameter("id", id_mess);
+        queryM.setParameter("fromUser", id_user);
+        assertEquals("message1", queryM.getSingleResult().getMess());
+
     }
 
 

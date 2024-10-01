@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -15,88 +16,111 @@ public class Messages {
     private  int id;
 
     @Column(name="message",nullable = false)
-    private String message;
+    private String mess;
 
     @Column(name="time_send", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime time_send;
+    private LocalDateTime timeSend;
 
     @Column(name="is_got")
-    private boolean is_got;
+    private boolean isGot;
 
     @Column(name="time_receive")
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime time_receive;
+    private LocalDateTime timeReceive;
 
     @ManyToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn (name="from_user", nullable = false)
-    private Users from_user;
-//
-//    @ManyToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn (name="to_user", nullable = false)
-//    private Users to_user;
+    private Users fromUser;
+
+    @ManyToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn (name="to_user", nullable = false)
+    private Users toUser;
 
 
-    public Messages(String message, LocalDateTime time_send, boolean is_got, LocalDateTime time_receive) {
-        this.message = message;
-        this.time_send = time_send;
-        this.time_receive = time_receive;
-        this.is_got = is_got;
-    }
 
-    public Messages(String message, LocalDateTime time_send, boolean is_got) {
-        this.message = message;
-        this.time_send = time_send;
-        this.is_got = is_got;
-    }
 
     public Messages() {  }
 
-    public Users getFrom_user() { return from_user; }
+    public Messages(String mess, LocalDateTime timeSend, boolean isGot, LocalDateTime timeReceive) {
+        this.mess = mess;
+        this.timeSend = timeSend;
+        this.isGot = isGot;
+        this.timeReceive = timeReceive;
+    }
 
-    public void setFrom_user(Users from_user) {  this.from_user = from_user;  }
+    public Messages(String mess, LocalDateTime timeSend, boolean isGot) {
+        this.mess = mess;
+        this.timeSend = timeSend;
+        this.isGot = isGot;
+    }
 
     public int getId() {
         return id;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public boolean isIs_got() {
-        return is_got;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public String getMess() {
+        return mess;
     }
 
-    public void setIs_got(boolean is_got) {
-        this.is_got = is_got;
+    public void setMess(String mess) {
+        this.mess = mess;
     }
 
-    public LocalDateTime getTime_receive() { return time_receive;  }
+    public LocalDateTime getTimeSend() {
+        return timeSend;
+    }
 
-    public LocalDateTime getTime_send() { return time_send; }
+    public void setTimeSend(LocalDateTime timeSend) {
+        this.timeSend = timeSend;
+    }
 
-    public void setTime_receive(LocalDateTime time_receive) {this.time_receive = time_receive; }
+    public boolean isGot() {
+        return isGot;
+    }
 
-    public void setTime_send(LocalDateTime time_send) { this.time_send = time_send; }
+    public void setGot(boolean got) {
+        isGot = got;
+    }
+
+    public LocalDateTime getTimeReceive() {
+        return timeReceive;
+    }
+
+    public void setTimeReceive(LocalDateTime timeReceive) {
+        this.timeReceive = timeReceive;
+    }
+
+    public Users getFromUser() {
+        return fromUser;
+    }
+
+    public void setFromUser(Users fromUser) {
+        this.fromUser = fromUser;
+    }
+
+    public Users getToUser() {
+        return toUser;
+    }
+
+    public void setToUser(Users toUser) {
+        this.toUser = toUser;
+    }
 
     @Override
     public String toString() {
         return "Messages{" +
                 "id=" + id +
-                ", message='" + message + '\'' +
-                ", time_send=" + time_send +
-                ", is_got=" + is_got +
-                ", time_receive=" + time_receive +
-                ", from_user=" + from_user +
+                ", mess='" + mess + '\'' +
+                ", timeSend=" + timeSend +
+                ", isGot=" + isGot +
+                ", timeReceive=" + timeReceive +
+                ", fromUser=" + fromUser +
+                ", toUser=" + toUser +
                 '}';
     }
 }

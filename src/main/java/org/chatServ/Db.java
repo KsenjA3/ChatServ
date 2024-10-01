@@ -12,14 +12,17 @@ import java.util.List;
 @Log4j2
 class Db {
     private final Connector connector;
-    protected HashMap<String, String> userListRegistration;
-    protected HashMap<String, Boolean> referenceBook ;
-    protected List<Users> users;
+    private HashMap<String, String> userListRegistration;
+    private HashMap<String, Boolean> referenceBook ;
+    private List<Users> users;
     private Users u;
-    private Messages mess;
+    private Messages m;
+    String commandU;
+    Query<Users> queryU;
 
     Db (String path){
         connector = new Connector(path);
+        commandU = " FROM Users WHERE userName = :user";
     }
 
     void createUserDB ( ThreadedEchoServer echoServer){
@@ -32,9 +35,9 @@ class Db {
             Query<Users> query = session.createQuery("FROM Users", Users.class);
             users= query.getResultList();
             users.forEach(u-> {
-                userListRegistration.put(u.getUser_name(), u.getPassword());
-                referenceBook.put(u.getUser_name(), false);
-                u.setIs_online(false);
+                userListRegistration.put(u.getUserName(), u.getPassword());
+                referenceBook.put(u.getUserName(), false);
+                u.setOnline(false);
             });
             log.info("!!!!! User List Registration {}" , userListRegistration);
 
@@ -50,21 +53,19 @@ class Db {
     void addUser (String user_name, String password){
         try (Session session= connector.getSession()) {
             u = new Users(user_name, password, false);
+
             session.beginTransaction();
             session.persist(u);
             session.getTransaction().commit();
         }
     }
 
-    void updateOnline (String user_name, boolean isOnline){
+    void updateOnline (String userName, boolean is_Online){
         try (Session session= connector.getSession()) {
-
-
-            String hql = " FROM Users WHERE user_name = :user_name";
-            Query<Users> query = session.createQuery(hql, Users.class);
-            query.setParameter("user_name", user_name);
-            u = query.getSingleResult();
-            u.setIs_online(isOnline);
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("user", userName);
+            u = queryU.getSingleResult();
+            u.setOnline(is_Online);
 
             session.beginTransaction();
             session.persist(u);
@@ -73,14 +74,29 @@ class Db {
     }
 
 
-    void addMessage (String message,  String from_user, String to_user){
+    void addMessage (String mess,  String fromUser, String toUser){
         LocalDateTime time_send = LocalDateTime.now();
 
         try (Session session= connector.getSession()) {
-            mess= new Messages(message,  time_send,  false, null);
+            m= new Messages(mess,  time_send,  false, null);
+
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("user", toUser);
+            u = queryU.getSingleResult();
+            m.setToUser(u);
+
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("user", fromUser);
+            u = queryU.getSingleResult();
+            m.setFromUser(u);
+
             session.beginTransaction();
-            session.persist(mess);
+            session.persist(m);
             session.getTransaction().commit();
         }
     }
+
+
+
+
 }

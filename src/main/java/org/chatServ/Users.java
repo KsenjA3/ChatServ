@@ -17,76 +17,98 @@ public class Users {
     private  int id;
 
     @Column(name="user_name",nullable = false)
-    private String user_name;
+    private String userName;
 
     @Column(name="password",nullable = false)
     private String password;
 
     @Column(name="is_online",nullable = false)
-    private boolean is_online;
+    private boolean isOnline;
 
-    @OneToMany (mappedBy = "from_user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn (name = "message_id", unique = true)
-    private List<Messages> messages;
+    @OneToMany (mappedBy = "fromUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Messages> messagesFrom;
+
+    @OneToMany (mappedBy = "toUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Messages> messagesTo;
 
 
     public Users() {   }
 
-    public Users(String user_name, String password, boolean is_online) {
-        this.user_name = user_name;
+    public Users(String userName, String password, boolean isOnline) {
+        this.userName = userName;
         this.password = password;
-        this.is_online = is_online;
+        this.isOnline = isOnline;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public boolean isIs_online() {
-        return is_online;
-    }
-
-    public void setId(int id) { this.id = id;  }
-
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public void setIs_online(boolean is_online) {
-        this.is_online = is_online;
+    public boolean isOnline() {
+        return isOnline;
     }
 
-    public List<Messages> getMessages() { return messages;  }
+    public void setOnline(boolean online) {
+        isOnline = online;
+    }
 
-    public void setMessages(List<Messages> messages) {   this.messages = messages;  }
+    public List<Messages> getMessagesFrom() {
+        return messagesFrom;
+    }
 
-    public void addMessageFromUser( Messages mess) {
-        if (messages==null)
-            messages=new ArrayList<>();
-        messages.add(mess);
-        mess.setFrom_user(this);
+    public void setMessagesFrom(List<Messages> messagesFrom) {
+        this.messagesFrom = messagesFrom;
+    }
+
+    public List<Messages> getMessagesTo() {
+        return messagesTo;
+    }
+
+    public void setMessagesTo(List<Messages> messagesTo) {
+        this.messagesTo = messagesTo;
+    }
+
+    public void addMessageFromUser(Messages mess) {
+        if (messagesFrom==null)
+            messagesFrom=new ArrayList<>();
+        messagesFrom.add(mess);
+        mess.setFromUser(this);
+    }
+
+    public void addMessageToUser(Messages mess) {
+        if (messagesTo==null)
+            messagesTo=new ArrayList<>();
+        messagesTo.add(mess);
+        mess.setToUser(this);
     }
 
     @Override
     public String toString() {
         return "Users{" +
                 "id=" + id +
-                ", user_name='" + user_name + '\'' +
+                ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", is_online=" + is_online +
-//                ", messages=" + messages +
+                ", isOnline=" + isOnline +
                 '}';
     }
 }
