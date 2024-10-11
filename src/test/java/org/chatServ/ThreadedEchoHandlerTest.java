@@ -269,17 +269,44 @@ class ThreadedEchoHandlerTest {
     }
 
 
+    @SneakyThrows
+    @Test
+    void send_message (){
+        Thread thread = new Thread() {
+            public void run (){
+                try{
+                    try {
+                        socket=serverSocket.accept();
+                        socket.setSoTimeout(1000000);
+                        threadedEchoHandler= new ThreadedEchoHandler(socket , echoServer);
+                        threadedEchoHandler.setDb(db);
+                        threadedEchoHandler.send_message(socket,"newMessages","server","newMessages","userTest");
+                    }finally {
+                        socket.close();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        thread.start();
+
+        Thread.sleep(100);
+        if (br.ready())
+            response =br.readLine();
+        assertEquals("command:newMessages", response);
+
+        if (br.ready())
+            response =br.readLine();
+        assertEquals("user:server", response);
+
+        if (br.ready())
+            response =br.readLine();
+        assertEquals("message:newMessages", response);
+
+    }
 
 
 
 
-
-//
-//    @Test
-//    void send_referenceBook() {
-//    }
-//
-//    @Test
-//    void send_message() {
-//    }
 }

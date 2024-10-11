@@ -18,15 +18,17 @@ class Db {
     private List<Users> users;
     private Users u;
     private Messages m;
-    String commandU;
-    Query<Users> queryU;
+    private String commandU;
+    private String commandMessage;
+    private Query<Users> queryU;
+    private Query<Messages> queryM;
 
     Db (String path){
         connector = new Connector(path);
         commandU = " FROM Users WHERE userName = :user";
     }
 
-    void createUserDB ( ThreadedEchoServer echoServer){
+    protected void createUserDB ( ThreadedEchoServer echoServer){
         userListRegistration=echoServer.getUserListRegistration();
         referenceBook=echoServer.getReferenceBook();
 
@@ -51,7 +53,7 @@ class Db {
         }
     }
 
-    void addUser (String user_name, String password){
+    protected void addUser (String user_name, String password){
         try (Session session= connector.getSession()) {
             u = new Users(user_name, password, false);
 
@@ -61,7 +63,7 @@ class Db {
         }
     }
 
-    void updateOnline (String userName, boolean is_Online){
+    protected void updateOnline (String userName, boolean is_Online){
         try (Session session= connector.getSession()) {
             queryU = session.createQuery(commandU, Users.class);
             queryU.setParameter("user", userName);
@@ -75,7 +77,7 @@ class Db {
     }
 
 
-    void addMessage (String mess,  String fromUser,  List<String> toUsersList){
+    protected void addMessage (String mess,  String fromUser,  List<String> toUsersList){
         try (Session session= connector.getSession()) {
             m= new Messages(mess);
 
@@ -99,7 +101,30 @@ class Db {
         }
     }
 
+    protected boolean isNewMessagesExist(String toUser) {
+        boolean isMessagesExist = false;
 
+        try (Session session= connector.getSession()) {
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("user", toUser);
+            int id_user = queryU.getSingleResult().getId();
+
+            commandMessage = """
+                SELECT m
+                FROM Messages m
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers 
+                AND m.isGot= :isGot
+                """;
+
+            queryM = session.createQuery(commandMessage, Messages.class);
+            queryM.setParameter("toUsers", id_user);
+            queryM.setParameter("isGot", false);
+            if(queryM.getResultList().size()>0)
+                isMessagesExist=true;
+        }
+        return isMessagesExist;
+    }
 
 
 }

@@ -124,9 +124,14 @@ System.out.println("-----------------------------------------------");
 //                    db.updateOnline(sender,true);
 
                     // fill table messages
-                    fillTableMessages(message,sender,receiver);
-
-                    //посылаем инфо о непрочитанных сообщениях
+                    List<String> receiversListNewMess=fillTableMessages(message,sender,receiver);
+                    receiversListNewMess.forEach(receiverString->{
+                        //посылаем инфо о непрочитанных сообщениях
+                        if(echoServer.getUserListOnline().containsKey(receiverString)){
+                            Socket s = echoServer.getUserListOnline().get(receiverString);
+                            send_signal_newMessages( s,  receiverString);
+                        }
+                    });
                 }
                 case "exit"->{
                     exitAccount(sender);
@@ -154,6 +159,10 @@ System.out.println("-----------------------------------------------");
 
                     //разослать новый справочник всем онлайн
                     send_referenceBook ();
+                    //инфо о наличии новых сообщениях
+                    boolean isNewMessagesExist=db.isNewMessagesExist(sender);
+                    if (isNewMessagesExist)
+                        send_signal_newMessages( incoming,  sender);
                 }
             }else {
                 outNet.println("NoPassword");
@@ -196,8 +205,8 @@ System.out.println("-----------------------------------------------");
         db.updateOnline(sender,false);
     }
 
-    protected void fillTableMessages(String message,String sender,String stringReceiversList){
-
+    protected  List<String>  fillTableMessages(String message,String sender,String stringReceiversList){
+        List<String> receiversListNewMess;
         if (StringUtils.startsWith(stringReceiversList,"<html>") &&
             StringUtils.endsWith(stringReceiversList,"</html>") ){
             stringReceiversList=StringUtils.removeEnd(stringReceiversList,"</html>");
@@ -209,14 +218,19 @@ System.out.println("-----------------------------------------------");
                     if (!user_receiver.equals(sender))
                         receiversList.add(user_receiver);
                 });
+                receiversListNewMess=  new ArrayList<>(receiversList);
                 db.addMessage(message,sender,receiversList);
             }
             else {
                 String[] massReceiversList =stringReceiversList.split("<br>");
                 List<String> receiversList= Arrays.stream(massReceiversList).toList();
                 db.addMessage(message,sender,receiversList);
+                receiversListNewMess=  new ArrayList<>(receiversList);
             }
+            return receiversListNewMess;
         }
+        else return null;
+
     }
 
     String referenceBook_to_JSON (){
@@ -236,50 +250,54 @@ System.out.println("-----------------------------------------------");
     }
 
     @SneakyThrows(InterruptedException.class)
-    void  send_referenceBook ()  {
+    private void  send_referenceBook ()  {
         Thread.sleep(1000);
-        String txt= "message:"+referenceBook_to_JSON ();
+        String txt= ""+referenceBook_to_JSON ();
         echoServer.getUserListOnline().forEach((user,socket) -> {
-            try{
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                out.println("command:referenceBook");
-                out.println("user:server");
-                out.println(txt);
-
-            } catch (IOException e) {
-                log.error(e);
-                e.printStackTrace();
-            }
+            send_message(socket, "referenceBook","server",txt, user);
         });
     }
 
+    private void send_signal_newMessages(Socket s, String receiver){
+        String cmd="newMessages";
+        String mess = "newMessages";
+        send_message(s,cmd, "server", mess,receiver);
+    }
 
-
-    protected void send_message(Socket s,  String command,String from_user,String message,String to_use) throws InterruptedException {
-        BufferedReader brNet;
-        PrintWriter outNet;
-        try{
-            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+    @SneakyThrows
+    protected void send_message(Socket s, String command,String from_user,String message,String to_user) {
+        try {
             PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-
-            out.println("command:"+command);
-            out.println("user:"+from_user);
-            out.println("message:"+message);
+            out.println("command:" + command);
+            out.println("user:" + from_user);
+            out.println("message:" + message);
             out.flush();
 
+            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
             s.setSoTimeout(1000000000);
             sleep(100);
             if (br.ready()) {
-                String response_command=br.readLine().trim();
-                String response_user=br.readLine().trim();
-                String response_message=br.readLine().trim();
+                String response_command = br.readLine().trim();
+                String response_user = br.readLine().trim();
+                String response_message = br.readLine().trim();
 
-//                if ()
+                if (response_command.equals("command:" + command) &&
+                        response_user.equals("user:" + to_user) &&
+                        response_message.equals("message:" + message)) {
+                    System.out.println("+++++++++++++++++++++++++++++++++");
+                    return;
+                } else {
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println(response_command+"="+"command:" + command);
+                    System.out.println(response_user+"="+"user:" + from_user);
+                    System.out.println(response_message+"="+"message:" + message);
+
+                    send_message(s, command, from_user, message,to_user);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
 }

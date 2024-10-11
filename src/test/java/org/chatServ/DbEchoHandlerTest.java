@@ -85,14 +85,19 @@ class DbEchoHandlerTest {
         db.addUser("userFillTableMess2", "bbb");
         db.addUser("userFillTableMess3", "ccc");
 
-        threadedEchoHandler.fillTableMessages("mess_from2_to3", "userFillTableMess2",
-                "<html>userFillTableMess3</html>");
-        threadedEchoHandler.fillTableMessages("mess_from3_to_list(1,2)", "userFillTableMess3",
-                "<html>userFillTableMess2<br>userFillTableMess1</html>");
-
+        List<String> receiversListNewMess;
         threadedEchoHandler.setEchoServer(echoServer);
         Mockito.when(echoServer.getUserListRegistration()).thenReturn(userListRegistration);
-        threadedEchoHandler.fillTableMessages("messAll_from1", "userFillTableMess1", "<html>to all</html>");
+
+        receiversListNewMess=threadedEchoHandler.fillTableMessages("mess_from2_to3", "userFillTableMess2", "<html>userFillTableMess3</html>");
+        assertEquals("userFillTableMess3",receiversListNewMess.get(0));
+
+        receiversListNewMess=threadedEchoHandler.fillTableMessages("mess_from3_to_list(1,2)", "userFillTableMess3", "<html>userFillTableMess2<br>userFillTableMess1</html>");
+        assertTrue(receiversListNewMess.contains("userFillTableMess2"));
+
+        receiversListNewMess=threadedEchoHandler.fillTableMessages("messAll_from1", "userFillTableMess1", "<html>to all</html>");
+        assertEquals(2,receiversListNewMess.size());
+
 
         queryU = session.createQuery(commandUser, Users.class);
         queryU.setParameter("userName", "userFillTableMess2");
@@ -125,6 +130,17 @@ class DbEchoHandlerTest {
         queryM = session.createQuery(commandMessage, Messages.class);
         queryM.setParameter("toUsers", id_user1);
         assertEquals("mess_from3_to_list(1,2)", queryM.getSingleResult().getMess());
+
+        // count  mess to 2 = 2
+        commandMessage = """
+                SELECT m
+                FROM Messages m
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers 
+                """;
+        queryM = session.createQuery(commandMessage, Messages.class);
+        queryM.setParameter("toUsers", id_user2);
+        assertEquals(2, queryM.getResultList().size());
 
 
 //        mess from 3 to 2 = mess_from3_to_list(1,2)
