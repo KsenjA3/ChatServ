@@ -1,16 +1,16 @@
 package org.chatServ;
 
+import jakarta.persistence.TypedQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -101,15 +101,72 @@ class DbTest {
 
     @Test
     void addMessage() {
-        db.addUser("addMessage1", "111");
-        db.addUser("addMessage2", "222");
-        db.addUser("addMessage3", "111");
-        db.addMessage("content 1","addMessage1","addMessage2");
-        db.addMessage("content 2","addMessage1","addMessage3");
-        db.addMessage("content 3","addMessage2","addMessage3");
-        db.addMessage("content 4","addMessage2","addMessage1");
-        db.addMessage("content 5","addMessage3","addMessage1");
-        db.addMessage("content 6","addMessage3","addMessage2");
+        db.addUser("userAddMessage1", "111");
+        db.addUser("userAddMessage2", "222");
+        db.addUser("userAddMessage3", "333");
+
+        List<String> toUsersList=new ArrayList<String>();
+        toUsersList.add("userAddMessage2");
+        db.addMessage("content 1 to 2","userAddMessage1",toUsersList);
+
+        toUsersList.add("userAddMessage1");
+        db.addMessage("content 3 to list(1,2)","userAddMessage3",toUsersList);
+
+        queryU = session.createQuery(commandUser, Users.class);
+        queryU.setParameter("userName", "userAddMessage2");
+        int id_user2 =queryU.getSingleResult().getId();
+
+        queryU = session.createQuery(commandUser, Users.class);
+        queryU.setParameter("userName", "userAddMessage3");
+        int id_user3 =queryU.getSingleResult().getId();
+
+        queryU = session.createQuery(commandUser, Users.class);
+        queryU.setParameter("userName", "userAddMessage1");
+        int id_user1 =queryU.getSingleResult().getId();
+
+        //      from        to
+        //       1           2
+        //       3           1
+        //       3           2
+
+//        from 1
+        commandMessage = """   
+                FROM  Messages m              
+                WHERE 
+                m.fromUser.id = :fromUser                            
+                """;
+        queryM = session.createQuery(commandMessage, Messages.class);
+        queryM.setParameter("fromUser",id_user1);
+        assertEquals("userAddMessage2", queryM.getSingleResult().getToUsers().get(0).getUserName());
+
+//        from 3 to 2
+        commandMessage = """  
+                SELECT m 
+                FROM Messages m 
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers 
+                AND
+                m.fromUser.id = :fromUser                         
+                """;
+        queryM = session.createQuery(commandMessage, Messages.class);
+        queryM.setParameter("toUsers", id_user2);
+        queryM.setParameter("fromUser",id_user3);
+        List<Messages> messList = queryM.getResultList();
+        assertEquals("content 3 to list(1,2)",messList.get(0).getMess() );
+
+
+
+//        list to 2
+        commandMessage = """  
+                SELECT m 
+                FROM Messages m 
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers                                         
+                """;
+        queryM = session.createQuery(commandMessage, Messages.class);
+        queryM.setParameter("toUsers", id_user2);
+        messList = queryM.getResultList();
+        assertEquals(2,messList.size() );
 
 //        commandMessage = "FROM Messages";
 //        queryM = session.createQuery(commandMessage, Messages.class);
@@ -117,26 +174,5 @@ class DbTest {
 //        mmm.forEach(m->{
 //            System.out.println(m);
 //        });
-
-        queryU = session.createQuery(commandUser, Users.class);
-        queryU.setParameter("userName", "addMessage2");
-        int id_userFrom =queryU.getSingleResult().getId();
-
-        queryU = session.createQuery(commandUser, Users.class);
-        queryU.setParameter("userName", "addMessage3");
-        int id_userTo =queryU.getSingleResult().getId();
-
-        commandMessage = """ 
-                FROM Messages 
-                WHERE 
-                fromUser.id = :fromUser
-                AND
-                toUser.id = :toUser
-                """;
-        queryM = session.createQuery(commandMessage, Messages.class);
-        queryM.setParameter("fromUser",id_userFrom);
-        queryM.setParameter("toUser",id_userTo);
-
-        assertEquals("content 3", queryM.getSingleResult().getMess());
     }
 }

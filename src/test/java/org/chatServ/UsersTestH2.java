@@ -25,13 +25,13 @@ class UsersTestH2 {
         db = new Db("hibernateTest.cfg.xml");
         LocalDateTime time1 = LocalDateTime.now();
         user1 = new Users("user1", "aaa", true);
-        mess1= new Messages("message1",  time1,  false);
-        mess11= new Messages("message11",  time1,  false);
+        mess1= new Messages("message1");
+        mess11= new Messages("message11");
 
         user2= new Users("user2", "bbb", false);
         LocalDateTime time2 = LocalDateTime.now();
-        mess2= new Messages("message2",  time1,  false, time2);
-        mess22= new Messages("message22",  time1,  false, time2);
+        mess2= new Messages("message2");
+        mess22= new Messages("message22");
     }
 
     @AfterAll
@@ -52,15 +52,15 @@ class UsersTestH2 {
 
     @Test
     void addMessageFromUser() {
-        user1.addMessageFromUser(mess1);
-        user1.addMessageFromUser(mess11);
-        user2.addMessageToUser(mess1);
-        user2.addMessageToUser(mess11);
+        user1.add_oneMessage_to_FromUser(mess1);
+        user1.add_oneMessage_to_FromUser(mess11);
+        user2.add_oneMessage_to_ToUser(mess1);
+        user2.add_oneMessage_to_ToUser(mess11);
 
-        user2.addMessageFromUser(mess2);
-        user2.addMessageFromUser(mess22);
-        user1.addMessageToUser(mess2);
-        user1.addMessageToUser(mess22);
+        user2.add_oneMessage_to_FromUser(mess2);
+        user2.add_oneMessage_to_FromUser(mess22);
+        user1.add_oneMessage_to_ToUser(mess2);
+        user1.add_oneMessage_to_ToUser(mess22);
 
         session.beginTransaction();
         session.persist(user1);

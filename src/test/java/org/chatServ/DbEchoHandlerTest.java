@@ -76,54 +76,104 @@ class DbEchoHandlerTest {
 
     @Test
     void fillTableMessages() {
+        userListRegistration = new HashMap<>();
+        userListRegistration.put("userFillTableMess1", "aaa");
+        userListRegistration.put("userFillTableMess2", "bbb");
+        userListRegistration.put("userFillTableMess3", "ccc");
 
-        userListRegistration= new HashMap<>();
-        userListRegistration.put("fillTableMess1", "aaa");
-        userListRegistration.put("fillTableMess2", "bbb");
-        userListRegistration.put("fillTableMess3", "ccc");
+        db.addUser("userFillTableMess1", "aaa");
+        db.addUser("userFillTableMess2", "bbb");
+        db.addUser("userFillTableMess3", "ccc");
 
-        db.addUser("fillTableMess1", "aaa");
-        db.addUser("fillTableMess2", "bbb");
-        db.addUser("fillTableMess3", "ccc");
-
-        threadedEchoHandler.fillTableMessages("mess23","fillTableMess2","fillTableMess3");
-        threadedEchoHandler.fillTableMessages("mess32","fillTableMess3","fillTableMess2");
+        threadedEchoHandler.fillTableMessages("mess_from2_to3", "userFillTableMess2",
+                "<html>userFillTableMess3</html>");
+        threadedEchoHandler.fillTableMessages("mess_from3_to_list(1,2)", "userFillTableMess3",
+                "<html>userFillTableMess2<br>userFillTableMess1</html>");
 
         threadedEchoHandler.setEchoServer(echoServer);
         Mockito.when(echoServer.getUserListRegistration()).thenReturn(userListRegistration);
-        threadedEchoHandler.fillTableMessages("messAll","fillTableMess1","to all");
+        threadedEchoHandler.fillTableMessages("messAll_from1", "userFillTableMess1", "<html>to all</html>");
 
         queryU = session.createQuery(commandUser, Users.class);
-        queryU.setParameter("userName", "fillTableMess2");
-        int id_user2 =queryU.getSingleResult().getId();
+        queryU.setParameter("userName", "userFillTableMess2");
+        int id_user2 = queryU.getSingleResult().getId();
 
         queryU = session.createQuery(commandUser, Users.class);
-        queryU.setParameter("userName", "fillTableMess3");
-        int id_user3 =queryU.getSingleResult().getId();
+        queryU.setParameter("userName", "userFillTableMess3");
+        int id_user3 = queryU.getSingleResult().getId();
 
+        queryU = session.createQuery(commandUser, Users.class);
+        queryU.setParameter("userName", "userFillTableMess1");
+        int id_user1 = queryU.getSingleResult().getId();
+
+/**
+        from        to      message
+         2           3      mess_from2_to3
+         3           1      mess_from3_to_list(1,2)
+         3           2      mess_from3_to_list(1,2)
+         1           2      messAll_from1
+         1           3      messAll_from1
+**/
+
+//        mess to 1 = mess_from3_to_list(1,2)
         commandMessage = """
-                FROM Messages
-                WHERE
-                fromUser.id = :fromUser
+                SELECT m
+                FROM Messages m
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers 
+                """;
+        queryM = session.createQuery(commandMessage, Messages.class);
+        queryM.setParameter("toUsers", id_user1);
+        assertEquals("mess_from3_to_list(1,2)", queryM.getSingleResult().getMess());
+
+
+//        mess from 3 to 2 = mess_from3_to_list(1,2)
+        commandMessage = """
+                 SELECT m
+                FROM Messages m
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers 
                 AND
-                toUser.id = :toUser
+                fromUser.id = :fromUser
+                                
                 """;
-
         queryM = session.createQuery(commandMessage, Messages.class);
-        queryM.setParameter("fromUser",id_user2);
-        queryM.setParameter("toUser",id_user3);
-        assertEquals("mess23", queryM.getSingleResult().getMess());
+        queryM.setParameter("toUsers", id_user2);
+        queryM.setParameter("fromUser", id_user3);
+        assertEquals("mess_from3_to_list(1,2)", queryM.getSingleResult().getMess());
 
+
+//        mess from 3 and to 3 = count(3)
         commandMessage = """
-                FROM Messages
-                WHERE
-                mess = :message
+                 SELECT m
+                FROM Messages m
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers 
+                OR
+                fromUser.id = :fromUser
+                                
                 """;
         queryM = session.createQuery(commandMessage, Messages.class);
-        queryM.setParameter("message","messAll");
-        List<Messages> messagesList = queryM.getResultList();
-        System.out.println(messagesList);
-        assertEquals(2, messagesList.size());
-    }
+        queryM.setParameter("toUsers", id_user3);
+        queryM.setParameter("fromUser", id_user3);
+        assertEquals(3, queryM.getResultList().size());
 
+/**
+        from        to      message                         id_mess
+         2           3      mess_from2_to3                    1
+         3           1      mess_from3_to_list(1,2)           2
+         3           2      mess_from3_to_list(1,2)           2
+         1           2      messAll_from1
+         1           3      messAll_from1                     3
+
+        [Messages{id=1, mess='mess_from2_to3', timeSend=2024-10-11T12:19:47.769825, isGot=false, timeReceive=null,
+        fromUser=Users{id=2, userName='userFillTableMess2', password='bbb', isOnline=false}},
+
+        Messages{id=2, mess='mess_from3_to_list(1,2)', timeSend=2024-10-11T12:19:47.798816, isGot=false, timeReceive=null,
+        fromUser=Users{id=3, userName='userFillTableMess3', password='ccc', isOnline=false}},
+
+        Messages{id=3, mess='messAll_from1', timeSend=2024-10-11T12:19:47.840826, isGot=false, timeReceive=null,
+        fromUser=Users{id=1, userName='userFillTableMess1', password='aaa', isOnline=false}}]
+**/
+    }
 }

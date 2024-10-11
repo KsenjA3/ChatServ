@@ -25,10 +25,16 @@ public class Users {
     @Column(name="is_online",nullable = false)
     private boolean isOnline;
 
-    @OneToMany (mappedBy = "fromUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany (mappedBy = "fromUser", fetch = FetchType.LAZY, cascade = {
+                    CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH })
     private List<Messages> messagesFrom;
 
-    @OneToMany (mappedBy = "toUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+    @ManyToMany (cascade = {
+            CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH })
+    @JoinTable (name="mess_to_user",
+            joinColumns = @JoinColumn (name="to_users", referencedColumnName = "id", nullable = false),
+            inverseJoinColumns = @JoinColumn (name="messages", referencedColumnName = "id",nullable = false) )
     private List<Messages> messagesTo;
 
 
@@ -38,6 +44,20 @@ public class Users {
         this.userName = userName;
         this.password = password;
         this.isOnline = isOnline;
+    }
+
+    public void add_oneMessage_to_FromUser(Messages mess) {
+        if (messagesFrom==null)
+            messagesFrom=new ArrayList<>();
+        messagesFrom.add(mess);
+        mess.setFromUser(this);
+    }
+
+    public void add_oneMessage_to_ToUser(Messages mess) {
+        if (messagesTo==null)
+            messagesTo=new ArrayList<>();
+        messagesTo.add(mess);
+//        mess.add_oneUser_to_Message(this);
     }
 
     public int getId() {
@@ -64,43 +84,19 @@ public class Users {
         this.password = password;
     }
 
-    public boolean isOnline() {
-        return isOnline;
-    }
+    public boolean isOnline() {  return isOnline; }
 
     public void setOnline(boolean online) {
         isOnline = online;
     }
 
-    public List<Messages> getMessagesFrom() {
-        return messagesFrom;
-    }
+    public List<Messages> getMessagesFrom() { return messagesFrom; }
 
-    public void setMessagesFrom(List<Messages> messagesFrom) {
-        this.messagesFrom = messagesFrom;
-    }
+    public void setMessagesFrom(List<Messages> messagesFrom) { this.messagesFrom = messagesFrom; }
 
-    public List<Messages> getMessagesTo() {
-        return messagesTo;
-    }
+    public List<Messages> getMessagesTo() { return messagesTo; }
 
-    public void setMessagesTo(List<Messages> messagesTo) {
-        this.messagesTo = messagesTo;
-    }
-
-    public void addMessageFromUser(Messages mess) {
-        if (messagesFrom==null)
-            messagesFrom=new ArrayList<>();
-        messagesFrom.add(mess);
-        mess.setFromUser(this);
-    }
-
-    public void addMessageToUser(Messages mess) {
-        if (messagesTo==null)
-            messagesTo=new ArrayList<>();
-        messagesTo.add(mess);
-        mess.setToUser(this);
-    }
+    public void setMessagesTo(List<Messages> messagesTo) {  this.messagesTo = messagesTo; }
 
     @Override
     public String toString() {

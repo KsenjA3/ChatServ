@@ -196,14 +196,26 @@ System.out.println("-----------------------------------------------");
         db.updateOnline(sender,false);
     }
 
-    protected void fillTableMessages(String message,String sender,String receiver){
-        if(!receiver.equals("to all"))
-            db.addMessage(message,sender,receiver);
-        else{
-            echoServer.getUserListRegistration().forEach((user_receiver,pass)->{
-                if (!user_receiver.equals(sender))
-                    db.addMessage(message,sender,user_receiver);
-            });
+    protected void fillTableMessages(String message,String sender,String stringReceiversList){
+
+        if (StringUtils.startsWith(stringReceiversList,"<html>") &&
+            StringUtils.endsWith(stringReceiversList,"</html>") ){
+            stringReceiversList=StringUtils.removeEnd(stringReceiversList,"</html>");
+            stringReceiversList= StringUtils.removeStart(stringReceiversList,"<html>");
+
+            if (stringReceiversList.equals(("to all"))){
+                List<String> receiversList= new ArrayList<>();
+                echoServer.getUserListRegistration().forEach((user_receiver,pass)->{
+                    if (!user_receiver.equals(sender))
+                        receiversList.add(user_receiver);
+                });
+                db.addMessage(message,sender,receiversList);
+            }
+            else {
+                String[] massReceiversList =stringReceiversList.split("<br>");
+                List<String> receiversList= Arrays.stream(massReceiversList).toList();
+                db.addMessage(message,sender,receiversList);
+            }
         }
     }
 
@@ -225,7 +237,7 @@ System.out.println("-----------------------------------------------");
 
     @SneakyThrows(InterruptedException.class)
     void  send_referenceBook ()  {
-        Thread.sleep(100);
+        Thread.sleep(1000);
         String txt= "message:"+referenceBook_to_JSON ();
         echoServer.getUserListOnline().forEach((user,socket) -> {
             try{

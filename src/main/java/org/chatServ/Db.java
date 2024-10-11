@@ -6,6 +6,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -74,21 +75,23 @@ class Db {
     }
 
 
-    void addMessage (String mess,  String fromUser, String toUser){
-        LocalDateTime time_send = LocalDateTime.now();
-
+    void addMessage (String mess,  String fromUser,  List<String> toUsersList){
         try (Session session= connector.getSession()) {
-            m= new Messages(mess,  time_send,  false, null);
-
-            queryU = session.createQuery(commandU, Users.class);
-            queryU.setParameter("user", toUser);
-            u = queryU.getSingleResult();
-            m.setToUser(u);
+            m= new Messages(mess);
 
             queryU = session.createQuery(commandU, Users.class);
             queryU.setParameter("user", fromUser);
             u = queryU.getSingleResult();
             m.setFromUser(u);
+
+            List<Users> toUsers = new ArrayList<>();
+            queryU = session.createQuery(commandU, Users.class);
+            toUsersList.forEach(toUser->{
+                queryU.setParameter("user", toUser);
+                u = queryU.getSingleResult();
+                toUsers.add(u);
+            });
+            m.setToUsers(toUsers);
 
             session.beginTransaction();
             session.persist(m);
