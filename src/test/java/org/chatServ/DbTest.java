@@ -175,4 +175,50 @@ class DbTest {
 //            System.out.println(m);
 //        });
     }
+
+    @Test
+    void setGotMessage (){
+        db.addUser("userSetGotMessage1", "111");
+        db.addUser("userSetGotMessage2", "222");
+        db.addUser("userSetGotMessage3", "333");
+
+        List<String> toUsersList=new ArrayList<String>();
+        toUsersList.add("userSetGotMessage2");
+        db.addMessage("content 3 to 2","userSetGotMessage3",toUsersList);
+
+        toUsersList.add("userSetGotMessage1");
+        db.addMessage("content 3 to list(1,2)","userSetGotMessage3",toUsersList);
+
+        queryU = session.createQuery(commandUser, Users.class);
+        queryU.setParameter("userName", "userSetGotMessage2");
+        int id_user2 =queryU.getSingleResult().getId();
+
+        queryU = session.createQuery(commandUser, Users.class);
+        queryU.setParameter("userName", "userSetGotMessage3");
+        int id_user3 =queryU.getSingleResult().getId();
+
+
+        //      from        to
+        //       3           2
+        //       3           1
+        //       3           2
+
+        db.setGotMessage ( "content 3 to 2",   "userSetGotMessage3",  "userSetGotMessage2");
+
+        commandMessage = """
+                SELECT m
+                FROM Messages m
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers 
+                AND m.fromUser.id = :fromUser
+                AND m.isGot = :isGot
+                """;
+
+        queryM = session.createQuery(commandMessage, Messages.class);
+        queryM.setParameter("toUsers", id_user2);
+        queryM.setParameter("fromUser",id_user3);
+        queryM.setParameter("isGot",true);
+        List<Messages> messList = queryM.getResultList();
+        assertEquals(1,messList.size() );
+    }
 }

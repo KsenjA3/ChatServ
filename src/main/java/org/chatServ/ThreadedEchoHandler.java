@@ -2,16 +2,12 @@ package org.chatServ;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
-//import org.json.JSObject;
-import netscape.javascript.JSObject;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.Query;
 
 import java.io.*;
 import java.net.*;
@@ -22,17 +18,14 @@ import static java.lang.Thread.*;
 @Log4j2
 
 class ThreadedEchoHandler implements Runnable{
-    private Socket incoming;
-
     @Setter
     private ThreadedEchoServer echoServer;
-
+    @Setter
+    private Db db;
+    private Socket incoming;
     protected PrintWriter outNet;
     protected BufferedReader brNet;
     private boolean done;
-
-    @Setter
-    private Db db;
 
     ThreadedEchoHandler(Socket s, ThreadedEchoServer echoServ){
         incoming=s;
@@ -92,7 +85,6 @@ System.out.println("-----------------------------------------------");
                         log.info("receiver = {}" , receiver);
                         send_response_for_request ( command,  user,  message, receiver);
                     }
-
                 }
             }
             finally {
@@ -100,13 +92,11 @@ System.out.println("-----------------------------------------------");
                 brNet.close();
                 incoming.close();
                 log.info("{} - is closed " , incoming);
-
             }
         } catch (IOException e) {
             log.error(e);
             e.printStackTrace();
         }
-
     }
 
     void send_response_for_request (String command, String sender, String message, String receiver) {
@@ -133,15 +123,41 @@ System.out.println("-----------------------------------------------");
                         }
                     });
                 }
+                case "request_correspondence"->{
+                    String mess =send_DB_request(sender, message);
+                    send_message(incoming,"correspondence", "server", mess,sender);
+                }
                 case "exit"->{
                     exitAccount(sender);
                 }
-
             }
         }
     }
 
-    protected void inAccount (String sender,String  message) {
+    private String send_DB_request(String user, String message) {
+        String answer="";
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            RequestCorrespondence requestCorrespondence = mapper.readValue(message,RequestCorrespondence.class);
+            log.info("{} - Request Correspondence " ,requestCorrespondence);
+            String type= requestCorrespondence.getType();
+            String period= requestCorrespondence.getPeriod();
+            String collocutor= requestCorrespondence.getCollocutor();
+                System.out.println("type= "+type);
+                System.out.println("period= "+period);
+                System.out.println("collocutor= "+collocutor);
+            answer=db.sendRequest( user, type, collocutor, period);
+
+//запись о прочтении сообщения
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return answer;
+    }
+
+    protected void inAccount (String sender, String  message) {
         if ( echoServer.getUserListRegistration().containsKey(sender)) {
 
             if(echoServer.getUserListRegistration().get(sender).equals(message)) {
@@ -275,7 +291,7 @@ System.out.println("-----------------------------------------------");
 
             BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
             s.setSoTimeout(1000000000);
-            sleep(100);
+            sleep(500);
             if (br.ready()) {
                 String response_command = br.readLine().trim();
                 String response_user = br.readLine().trim();
@@ -289,7 +305,7 @@ System.out.println("-----------------------------------------------");
                 } else {
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     System.out.println(response_command+"="+"command:" + command);
-                    System.out.println(response_user+"="+"user:" + from_user);
+                    System.out.println(response_user+"="+"user:" + to_user);
                     System.out.println(response_message+"="+"message:" + message);
 
                     send_message(s, command, from_user, message,to_user);

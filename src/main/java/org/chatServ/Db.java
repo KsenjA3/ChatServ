@@ -101,6 +101,37 @@ class Db {
         }
     }
 
+    protected void setGotMessage (String mess,  String fromUser, String toUser){
+        try (Session session= connector.getSession()) {
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("user", fromUser);
+            int id_fromUser =queryU.getSingleResult().getId();
+
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("user", toUser);
+            int id_toUser =queryU.getSingleResult().getId();
+
+            commandMessage = """
+                SELECT m
+                FROM Messages m
+                JOIN m.toUsers u 
+                WHERE u.id = :toUsers 
+                AND m.fromUser.id = :fromUser
+                AND m.mess = :mess
+                """;
+            queryM = session.createQuery(commandMessage, Messages.class);
+            queryM.setParameter("toUsers", id_toUser);
+            queryM.setParameter("fromUser",id_fromUser);
+            queryM.setParameter("mess",mess);
+            m = queryM.getSingleResult();
+            m.setGot(true);
+
+            session.beginTransaction();
+            session.persist(m);
+            session.getTransaction().commit();
+        }
+    }
+
     protected boolean isNewMessagesExist(String toUser) {
         boolean isMessagesExist = false;
 
@@ -125,6 +156,96 @@ class Db {
         }
         return isMessagesExist;
     }
+
+    protected String sendRequest(String user, String type, String collocutor, String period ) {
+        String answer="";
+
+        try (Session session= connector.getSession()) {
+             commandU = "FROM Users WHERE userName = :userName";
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("userName", user);
+            int id_user = queryU.getSingleResult().getId();
+
+            int id_collocutor=0;
+            if (!collocutor.equals("all")) {
+                queryU = session.createQuery(commandU, Users.class);
+                queryU.setParameter("userName", collocutor);
+                id_collocutor = queryU.getSingleResult().getId();
+            }
+
+
+            StringBuffer command=new StringBuffer();
+            command.append("SELECT m FROM Messages m \nJOIN m.toUsers u\n");
+
+            switch (type){
+                case "all" -> {
+                    if (collocutor.equals("all")){
+                        command.append("WHERE u.id = :user\nOR m.fromUser.id = :user\n");
+                    }
+                    else {
+                        command.append("WHERE (u.id = :user AND m.fromUser.id = :collocutor)\nOR ");
+                        command.append("(u.id = :collocutor AND m.fromUser.id = :user)\n");
+                    }
+                }
+                case "received" -> {
+                    if (collocutor.equals("all"))
+                        command.append("WHERE u.id = :user\n");
+                    else
+                        command.append("WHERE u.id = :user\nAND m.fromUser.id = :collocutor\n");
+                }
+                case "sent" -> {
+                    if (collocutor.equals("all"))
+                        command.append("WHERE m.fromUser.id = :user\n");
+                    else
+                        command.append("WHERE u.id = :collocutor\nAND m.fromUser.id = :user\n");
+                }
+                case "unread" -> {
+                    if (collocutor.equals("all"))
+                        command.append("WHERE u.id = :user \nAND m.isGot= :isGot");
+                    else {
+                        command.append("WHERE u.id = :user \nAND m.fromUser.id = :collocutor\nAND m.isGot= :isGot");
+                    }
+                }
+            }
+
+            switch (period){
+                case "all time" -> {
+
+                }
+                case "for week" -> {
+
+                }
+                case "for month" -> {
+
+                }
+                case "for year" -> {
+
+                }
+            }
+
+            commandMessage=command.toString();
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println(commandMessage);
+
+            queryM = session.createQuery(commandMessage, Messages.class);
+            queryM.setParameter("user", id_user);
+            if (!collocutor.equals("all")) queryM.setParameter("collocutor", id_collocutor);
+            if (type.equals("unread")) queryM.setParameter("isGot", false);
+            List<Messages> messagesList =queryM.getResultList();
+            System.out.println("___________________________________________");
+            System.out.println(messagesList);
+            System.out.println("messagesList= "+messagesList.size());
+
+            queryM = session.createQuery("from Messages", Messages.class);
+            System.out.println(queryM.getResultList());
+            // перебираем users у сообщения
+            // queryM.getSingleResult().getToUsers().size()
+
+
+        }
+        return answer;
+    }
+
 
 
 }
