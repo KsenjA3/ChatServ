@@ -147,7 +147,7 @@ System.out.println("-----------------------------------------------");
                 System.out.println("type= "+type);
                 System.out.println("period= "+period);
                 System.out.println("collocutor= "+collocutor);
-            answer=db.sendRequest( user, type, collocutor, period);
+//            answer=db.sendRequest( user, type, collocutor, period);
 
 //запись о прочтении сообщения
 
@@ -176,9 +176,9 @@ System.out.println("-----------------------------------------------");
                     //разослать новый справочник всем онлайн
                     send_referenceBook ();
                     //инфо о наличии новых сообщениях
-                    boolean isNewMessagesExist=db.isNewMessagesExist(sender);
-                    if (isNewMessagesExist)
-                        send_signal_newMessages( incoming,  sender);
+//                    boolean isNewMessagesExist=db.isNewMessagesExist(sender);
+//                    if (isNewMessagesExist)
+//                        send_signal_newMessages( incoming,  sender);
                 }
             }else {
                 outNet.println("NoPassword");

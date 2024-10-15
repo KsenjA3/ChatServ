@@ -12,38 +12,53 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+
+
     public static void main(String[] args) {
-//        Connector con = new Connector("hibernate.cfg.xml");
-//        Db db = new Db("hibernate.cfg.xml");
+        Connector con = new Connector("hibernate.cfg.xml");
+        Db db = new Db("hibernate.cfg.xml");
 
-//        db.addUser("u1", "111");
-//        db.addUser("u2", "222");
-//        db.addUser("u3", "333");
+        db.addUser("u1", "111");
+        db.addUser("u2", "222");
+        db.addUser("u3", "333");
+        Messages mess1,mess11,mess2,mess22,m1,m2,m11,m22;
+        mess1= new Messages("message1");
+        mess11= new Messages("message11");
+        mess2= new Messages("message2");
+        mess22= new Messages("message22");
+
+        try(Session session = con.getSession()){
+            session.beginTransaction();
+            Users user1 =session.get(Users.class, 1);
+            Users user2 =session.get(Users.class, 2);
+            Users user3 =session.get(Users.class, 3);
+
+
+
+            user1.add_oneMessage_to_FromUser(mess1);
+            session.persist(user1);
+
+            m1= (Messages) session.get(Messages.class, 1);
+            user2.add_oneMessage_to_ToUser(m1);
+
+//            user3.add_oneMessage_to_FromUser(mess11);
+//            m11=(Messages)session.get(Messages.class, 2);
+//            user2.add_oneMessage_to_ToUser(m11);
 //
-//        List<String> toUsersList=new ArrayList<String>();
-//        toUsersList.add("u2");
-//        db.addMessage("content 1 to 2","u1",toUsersList);
+//            user2.add_oneMessage_to_FromUser(mess2);
+//            m2=(Messages)session.get(Messages.class, 3);
+//            user1.add_oneMessage_to_ToUser(m2);
 //
-//        toUsersList.add("u1");
-//        db.addMessage("content 3 to list(1,2)","u3",toUsersList);
-
-//        try(Session session = con.getSession()){
-//
-//            session.beginTransaction();
-//            Messages mess = session.get(Messages.class,12);
-//            Users user = session.get(Users.class, 4);
-//            System.out.println(mess);
-//            session.delete(user);
-//            session.getTransaction().commit();
+//            user2.add_oneMessage_to_FromUser(mess22);
+//            m22=(Messages)session.get(Messages.class, 4);
+//            user3.add_oneMessage_to_ToUser(m22);
 
 
-        String str="userFillTableMess2<br>userFillTableMess1";
+            session.persist(user1);
+//            session.persist(user2);
+//            session.persist(user3);
 
-        String [] strMass = StringUtils.split(str,"<br>");
-//                str.split("<br>");
-        List<String> strList = Arrays.stream(strMass).toList();
-        System.out.println(strList);
-
-//        }
+            session.getTransaction().commit();
+        }
     }
 }

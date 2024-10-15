@@ -1,19 +1,27 @@
 package org.chatServ;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.grammars.hql.HqlParser;
+import org.hibernate.annotations.Cache;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name= "messages")
-public class Messages {
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Messages implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +34,6 @@ public class Messages {
     @Basic
     @Column(name="time_send", nullable = false)
     private LocalDateTime timeSend;
-
-    @Column(name="is_got")
-    private boolean isGot;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="time_receive")
@@ -44,86 +49,21 @@ public class Messages {
     @JoinColumn (name="from_user", nullable = false)
     private Users fromUser;
 
-
-
-    @ManyToMany (cascade = {
-            CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH })
-    @JoinTable (name="mess_to_user",
-            joinColumns = @JoinColumn (name="messages",referencedColumnName = "id", nullable = false),
-            inverseJoinColumns = @JoinColumn (name="to_users",referencedColumnName = "id", nullable = false) )
-    private List<Users> toUsers;
-
-
-
-
-    public Messages() {  }
+    @OneToMany (cascade = {
+            CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH },
+            fetch = FetchType.LAZY, mappedBy = "mu.messageId")
+    private Set<MessagesUsers> messagesUsers = new HashSet<>();
 
     public Messages( String mess) {
         this.mess = mess;
         this.timeSend = LocalDateTime.now();
-        this.isGot = false;
+        this.messagesUsers = new HashSet<>();
     }
-
-
 
     public void add_oneUser_to_Message(Users user) {
-        if (toUsers==null)
-            toUsers=new ArrayList<>();
-        toUsers.add(user);
-//        user.add_oneMessage_to_FromUser(this);
+        MessagesUsers messagesUser= new MessagesUsers(this,user);
+        messagesUsers.add(messagesUser);
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getMess() {
-        return mess;
-    }
-
-    public void setMess(String mess) {
-        this.mess = mess;
-    }
-
-    public LocalDateTime getTimeSend() {
-        return timeSend;
-    }
-
-    public void setTimeSend(LocalDateTime timeSend) {
-        this.timeSend = timeSend;
-    }
-
-    public boolean isGot() {
-        return isGot;
-    }
-
-    public void setGot(boolean got) {
-        isGot = got;
-    }
-
-    public LocalDateTime getTimeReceive() {
-        return timeReceive;
-    }
-
-    public void setTimeReceive(LocalDateTime timeReceive) {
-        this.timeReceive = timeReceive;
-    }
-
-    public Users getFromUser() {
-        return fromUser;
-    }
-
-    public void setFromUser(Users fromUser) {
-        this.fromUser = fromUser;
-    }
-
-    public List<Users> getToUsers() { return toUsers;  }
-
-    public void setToUsers(List<Users> toUsers) { this.toUsers = toUsers; }
 
     @Override
     public String toString() {
@@ -131,10 +71,8 @@ public class Messages {
                 "id=" + id +
                 ", mess='" + mess + '\'' +
                 ", timeSend=" + timeSend +
-                ", isGot=" + isGot +
                 ", timeReceive=" + timeReceive +
                 ", fromUser=" + fromUser +
-//                ", toUser=" + toUser +
                 '}';
     }
 }
