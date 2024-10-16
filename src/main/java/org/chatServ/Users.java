@@ -19,8 +19,8 @@ import java.util.Set;
 @Setter
 @Getter
 @Table(name= "users", uniqueConstraints = @UniqueConstraint(columnNames = "user_name"))
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//@Cacheable
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Users implements Serializable {
 
     @Id
@@ -42,31 +42,21 @@ public class Users implements Serializable {
 
     @OneToMany (cascade = {
             CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH },
-                fetch = FetchType.LAZY, mappedBy = "mu.userId")
-    private Set<MessagesUsers> messagesUsers = new HashSet<>();
+                fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<MessagesUsers> messagesUsers ;
 
     public Users(String userName, String password, boolean isOnline) {
         this.userName = userName;
         this.password = password;
         this.isOnline = isOnline;
+        this.messagesUsers = new HashSet<>();
     }
 
     public void add_oneMessage_to_ToUser(Messages mess) {
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++");
-        System.out.println(mess);
-        System.out.println(this);
         MessagesUsers messagesUser= new MessagesUsers(mess,this);
-        System.out.println(messagesUser);
         messagesUsers.add(messagesUser);
     }
     public void add_oneMessage_to_FromUser(Messages mess) {
-        if (messagesFrom==null)
-            messagesFrom=new ArrayList<>();
-        messagesFrom.add(mess);
-        mess.setFromUser(this);
-    }
-
-    public void add_oneMessage(Messages mess) {
         if (messagesFrom==null)
             messagesFrom=new ArrayList<>();
         messagesFrom.add(mess);

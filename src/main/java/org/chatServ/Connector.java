@@ -15,7 +15,6 @@ class Connector {
                 .addAnnotatedClass(Users.class)
                 .addAnnotatedClass(Messages.class)
                 .addAnnotatedClass(MessagesUsers.class)
-                .addAnnotatedClass(MessagesUsersID.class)
                 .buildSessionFactory();
     }
 

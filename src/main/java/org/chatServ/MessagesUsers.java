@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 
@@ -19,37 +20,36 @@ public class MessagesUsers implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int id;
 
-    @Embedded
-    @AssociationOverrides({
-            @AssociationOverride(name = "mu.messageId", joinColumns = @JoinColumn(name = "message_id")),
-            @AssociationOverride(name = "mu.userId", joinColumns = @JoinColumn(name = "user_id"))
-    })
-    private MessagesUsersID mu = new MessagesUsersID ();
-
     @Column(name="is_got")
     private boolean isGot;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="time_receive")
+    private LocalDateTime timeReceive;
 
-    @Transient
+    @PreUpdate
+    protected void onUpdate () {
+        timeReceive = LocalDateTime.now();
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
+    @JoinColumn(name = "user_id")
     private  Users user;
 
-    @Transient
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("messageId")
+    @JoinColumn(name = "message_id")
     private   Messages message;
 
     public MessagesUsers(Messages message, Users user){
         this.message=message;
         this.user=user;
+        this.isGot=false;
     }
 
     @Override
     public String toString() {
         return "MessagesUsers{" +
                 "id=" + id +
-                ", mu=" + mu +
                 ", isGot=" + isGot +
                 ", user=" + user +
                 ", message=" + message +
@@ -73,39 +73,4 @@ public class MessagesUsers implements Serializable {
         return Objects.equals(message, other.message) && Objects.equals(user, other.user);
     }
 
-
-//    @Transient
-//    public Messages getMessages () {
-//        return getMu().getMessageId();
-//    }
-//    public void setMessages (Messages message) {
-//        getMu().setMessageId(message);
-//    }
-//
-//    @Transient
-//    public Users getUsers () {
-//        return getMu().getUserId();
-//    }
-//    public void setUsers (Users user) {
-//        getMu().setUserId(user);
-//    }
-//
-//    public boolean equals(Object o) {
-//        if (this == o)
-//            return true;
-//        if (o == null || getClass() != o.getClass())
-//            return false;
-//
-//        MessagesUsers that = (MessagesUsers) o;
-//
-//        if (getMu() != null ? !getMu().equals(that.getMu())
-//                : that.getMu() != null)
-//            return false;
-//
-//        return true;
-//    }
-//
-//    public int hashCode() {
-//        return (getMu() != null ? getMu().hashCode() : 0);
-//    }
 }

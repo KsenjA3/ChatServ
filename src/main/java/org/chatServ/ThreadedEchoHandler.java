@@ -113,10 +113,11 @@ System.out.println("-----------------------------------------------");
                 case "chattingTo:"->{
 //                    db.updateOnline(sender,true);
 
-                    // fill table messages
+                    // fill Table Messages and list of message's receivers
                     List<String> receiversListNewMess=fillTableMessages(message,sender,receiver);
+
+                    //посылаем инфо о непрочитанных сообщениях всем online
                     receiversListNewMess.forEach(receiverString->{
-                        //посылаем инфо о непрочитанных сообщениях
                         if(echoServer.getUserListOnline().containsKey(receiverString)){
                             Socket s = echoServer.getUserListOnline().get(receiverString);
                             send_signal_newMessages( s,  receiverString);
@@ -176,9 +177,9 @@ System.out.println("-----------------------------------------------");
                     //разослать новый справочник всем онлайн
                     send_referenceBook ();
                     //инфо о наличии новых сообщениях
-//                    boolean isNewMessagesExist=db.isNewMessagesExist(sender);
-//                    if (isNewMessagesExist)
-//                        send_signal_newMessages( incoming,  sender);
+                    boolean isNewMessagesExist=db.isNewMessagesExist(sender);
+                    if (isNewMessagesExist)
+                        send_signal_newMessages( incoming,  sender);
                 }
             }else {
                 outNet.println("NoPassword");
@@ -191,12 +192,6 @@ System.out.println("-----------------------------------------------");
     }
 
     protected void registrationAccount(String sender,String  message){
-//        System.out.println(echoServer.getUserListRegistration());
-//        System.out.println(sender);
-//        System.out.println(echoServer.getUserListRegistration().containsKey(sender));
-//        System.out.println(echoServer.getUserListRegistration().get(sender).equals(message));
-
-
         if ( echoServer.getUserListRegistration().containsKey(sender)){
             outNet.println("BUSY");
         }else{

@@ -37,9 +37,9 @@ class DbEchoHandlerTest {
     private HashMap<String, String> userListRegistration;
     private HashMap<String, Boolean> referenceBook ;
     private static String commandUser, commandMessage;
-    Query<Users> queryU;
-    Query<Messages> queryM;
-
+    private Query<Users> queryU;
+    private Query<Messages> queryM;
+    private Query<MessagesUsers> queryMU;
 
     @SneakyThrows
     @BeforeAll
@@ -113,71 +113,7 @@ class DbEchoHandlerTest {
         queryU = session.createQuery(commandUser, Users.class);
         queryU.setParameter("userName", "userFillTableMess1");
         int id_user1 = queryU.getSingleResult().getId();
-
-/**
-        from        to      message
-         3           2      mess_from3_to2
-         2           3      mess_from2_to3
-         3           1      mess_from3_to_list(1,2)
-         3           2      mess_from3_to_list(1,2)
-         1           2      messAll_from1
-         1           3      messAll_from1
-**/
-
-//        mess to 1 = mess_from3_to_list(1,2)
-        commandMessage = """
-                SELECT m
-                FROM Messages m
-                JOIN m.toUsers u 
-                WHERE u.id = :toUsers 
-                """;
-        queryM = session.createQuery(commandMessage, Messages.class);
-        queryM.setParameter("toUsers", id_user1);
-        assertEquals("mess_from3_to_list(1,2)", queryM.getSingleResult().getMess());
-
-        // count  mess to 2 = 2
-        commandMessage = """
-                SELECT m
-                FROM Messages m
-                JOIN m.toUsers u 
-                WHERE u.id = :toUsers 
-                """;
-        queryM = session.createQuery(commandMessage, Messages.class);
-        queryM.setParameter("toUsers", id_user2);
-        assertEquals(3, queryM.getResultList().size());
-
-
-//        mess from 3 to 2 = mess_from3_to_list(1,2)
-        commandMessage = """
-                 SELECT m
-                FROM Messages m
-                JOIN m.toUsers u 
-                WHERE u.id = :toUsers 
-                AND
-                fromUser.id = :fromUser
-                                
-                """;
-        queryM = session.createQuery(commandMessage, Messages.class);
-        queryM.setParameter("toUsers", id_user2);
-        queryM.setParameter("fromUser", id_user3);
-        assertEquals(2, queryM.getResultList().size());
-
-
-//        mess from 3 and to 3 = count(3)
-        commandMessage = """
-                SELECT m
-                FROM Messages m
-                JOIN m.toUsers u 
-                WHERE u.id = :toUsers 
-                OR
-                m.fromUser.id = :fromUser                                
-                """;
-        queryM = session.createQuery(commandMessage, Messages.class);
-        queryM.setParameter("toUsers", id_user3);
-        queryM.setParameter("fromUser", id_user3);
-        assertEquals(4, queryM.getResultList().size());
-
-/**
+/*
         from        to      message                         id_mess
          3           2      mess_from3_to2                    1
          2           3      mess_from2_to3                    2
@@ -185,27 +121,54 @@ class DbEchoHandlerTest {
         |3           2      mess_from3_to_list(1,2)           3
          1           2      messAll_from1                     4
          1           3      messAll_from1                     4
+*/
 
-        [Messages{id=1, mess='mess_from2_to3', timeSend=2024-10-11T12:19:47.769825, isGot=false, timeReceive=null,
-        fromUser=Users{id=2, userName='userFillTableMess2', password='bbb', isOnline=false}},
-
-        Messages{id=2, mess='mess_from3_to_list(1,2)', timeSend=2024-10-11T12:19:47.798816, isGot=false, timeReceive=null,
-        fromUser=Users{id=3, userName='userFillTableMess3', password='ccc', isOnline=false}},
-
-        Messages{id=3, mess='messAll_from1', timeSend=2024-10-11T12:19:47.840826, isGot=false, timeReceive=null,
-        fromUser=Users{id=1, userName='userFillTableMess1', password='aaa', isOnline=false}}]
-**/
-
-//        mess from 3  = count(2)
+        // mess from 3 = count (3)
         commandMessage = """
-                SELECT m
-                FROM Messages m               
-                WHERE 
-                m.fromUser.id = :fromUser                                              
+               FROM MessagesUsers as mu
+               WHERE
+               mu.message.fromUser.id = :fromUser
                 """;
-        queryM = session.createQuery(commandMessage, Messages.class);
-        queryM.setParameter("fromUser", id_user3);
-        assertEquals(2, queryM.getResultList().size());
+        queryMU = session.createQuery(commandMessage, MessagesUsers.class);
+        queryMU.setParameter("fromUser", id_user3);
+        assertEquals(3, queryMU.getResultList().size());
+
+        // count  mess to 2 = count (3)
+        commandMessage = """
+               FROM MessagesUsers as mu
+               WHERE
+               mu.user.id= :toUser
+                """;
+        queryMU = session.createQuery(commandMessage, MessagesUsers.class);
+        queryMU.setParameter("toUser", id_user2);
+        assertEquals(3, queryMU.getResultList().size());
+
+
+        //mess from 3 to 2 = mess_from3_to_list(1,2)
+        commandMessage = """
+               FROM MessagesUsers as mu
+               WHERE
+               mu.user.id= :toUser
+               AND
+               mu.message.fromUser.id = :fromUser            
+                """;
+        queryMU = session.createQuery(commandMessage, MessagesUsers.class);
+        queryMU.setParameter("toUser", id_user2);
+        queryMU.setParameter("fromUser", id_user3);
+        assertEquals(2, queryMU.getResultList().size());
+
+//        mess from 3 and to 3 = count(3)
+        commandMessage = """
+               FROM MessagesUsers as mu
+               WHERE
+               mu.user.id= :toUser
+               OR
+               mu.message.fromUser.id = :fromUser                          
+                """;
+        queryMU = session.createQuery(commandMessage, MessagesUsers.class);
+        queryMU.setParameter("toUser", id_user3);
+        queryMU.setParameter("fromUser", id_user3);
+        assertEquals(5, queryMU.getResultList().size());
     }
 
 //    @Test

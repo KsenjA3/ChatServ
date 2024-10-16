@@ -4,11 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="def5cf4e-d77c-46ee-b382-7aa81cf06eb3" name="Changes" comment="add_mess">
-      <change afterPath="$PROJECT_DIR$/src/test/java/org/chatServ/DbEchoHandlerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/org/chatServ/ThreadedEchoHandlerTest.java" afterDir="false" />
+    <list default="true" id="def5cf4e-d77c-46ee-b382-7aa81cf06eb3" name="Changes" comment="composite_key">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Connector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Connector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Db.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Db.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Messages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/MessagesUsers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/MessagesUsers.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/MessagesUsersID.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/chatServ/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/chatServ/Users.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/hibernateTest.cfg.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/hibernateTest.cfg.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/chatServ/DbEchoHandlerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/chatServ/DbEchoHandlerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/chatServ/DbTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/chatServ/DbTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/chatServ/UsersTestH2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/chatServ/UsersTestH2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,16 +28,16 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="XML Properties File" />
         <option value="JUnit5 Test Class" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="work" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -47,10 +57,12 @@
     "Application.ThreadedEchoServer.executor": "Run",
     "JUnit.DbEchoHandlerTest.executor": "Run",
     "JUnit.DbEchoHandlerTest.fillTableMessages.executor": "Run",
+    "JUnit.DbEchoHandlerTest.sendRequest.executor": "Run",
     "JUnit.DbTest.addMessage.executor": "Run",
     "JUnit.DbTest.addUser.executor": "Run",
     "JUnit.DbTest.createUserDB.executor": "Run",
     "JUnit.DbTest.executor": "Run",
+    "JUnit.DbTest.setGotMessage.executor": "Run",
     "JUnit.DbTest.updateOnline.executor": "Run",
     "JUnit.DbTestConnect.addMessageFromUser.executor": "Run",
     "JUnit.DbTestH2.addMessageFromUser.executor": "Run",
@@ -62,7 +74,10 @@
     "JUnit.ThreadedEchoHandlerTest.inAccountOK.executor": "Run",
     "JUnit.ThreadedEchoHandlerTest.registrationAccountBUSY.executor": "Run",
     "JUnit.ThreadedEchoHandlerTest.registrationAccountOK.executor": "Run",
+    "JUnit.ThreadedEchoHandlerTest.send_message.executor": "Run",
     "JUnit.UsersTestH2.addMessageFromUser.executor": "Run",
+    "JUnit.UsersTestH2.addMessageToUser.executor": "Run",
+    "JUnit.UsersTestH2.add_oneToUser_to_Message.executor": "Run",
     "JUnit.UsersTestH2.executor": "Run",
     "JUnit.java in ChatServ1.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -70,7 +85,7 @@
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
     "dart.analysis.tool.window.visible": "false",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/JavaProjects/ChatServ1",
+    "last_opened_file_path": "D:/JavaProjects/ChatServClone",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0"
@@ -85,8 +100,8 @@
     </key>
   </component>
   <component name="RunManager" selected="JUnit.java in ChatServ1">
-    <configuration name="ThreadedEchoServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.chatServ.ThreadedEchoServer" />
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.chatServ.Main" />
       <module name="ChatServ1" />
       <extension name="coverage">
         <pattern>
@@ -98,7 +113,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="DbEchoHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="ThreadedEchoServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.chatServ.ThreadedEchoServer" />
       <module name="ChatServ1" />
       <extension name="coverage">
         <pattern>
@@ -106,9 +122,6 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="org.chatServ" />
-      <option name="MAIN_CLASS_NAME" value="org.chatServ.DbEchoHandlerTest" />
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -129,7 +142,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ThreadedEchoHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="DbTest.setGotMessage" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="ChatServ1" />
       <extension name="coverage">
         <pattern>
@@ -138,8 +151,9 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="org.chatServ" />
-      <option name="MAIN_CLASS_NAME" value="org.chatServ.ThreadedEchoHandlerTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="MAIN_CLASS_NAME" value="org.chatServ.DbTest" />
+      <option name="METHOD_NAME" value="setGotMessage" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -156,9 +170,9 @@
       <list>
         <item itemvalue="JUnit.java in ChatServ1" />
         <item itemvalue="JUnit.DbEchoHandlerTest.fillTableMessages" />
-        <item itemvalue="JUnit.DbEchoHandlerTest" />
-        <item itemvalue="JUnit.ThreadedEchoHandlerTest" />
         <item itemvalue="Application.ThreadedEchoServer" />
+        <item itemvalue="JUnit.DbTest.setGotMessage" />
+        <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
   </component>
@@ -219,7 +233,47 @@
       <option name="project" value="LOCAL" />
       <updated>1727771988754</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="manyMess_manyToUser_addMessage">
+      <option name="closed" value="true" />
+      <created>1728639057390</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1728639057390</updated>
+    </task>
+    <task id="LOCAL-00008" summary="send_infoAbout_newMessages">
+      <option name="closed" value="true" />
+      <created>1728677993160</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1728677993160</updated>
+    </task>
+    <task id="LOCAL-00009" summary="got_request_correspondence">
+      <option name="closed" value="true" />
+      <created>1728904530849</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1728904530849</updated>
+    </task>
+    <task id="LOCAL-00010" summary="got_request_correspondence">
+      <option name="closed" value="true" />
+      <created>1728907754167</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1728907754167</updated>
+    </task>
+    <task id="LOCAL-00011" summary="composite_key">
+      <option name="closed" value="true" />
+      <created>1729022085872</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1729022085872</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -239,34 +293,33 @@
     <MESSAGE value="createDB_users" />
     <MESSAGE value="1" />
     <MESSAGE value="add_mess" />
-    <option name="LAST_COMMIT_MESSAGE" value="add_mess" />
+    <MESSAGE value="manyMess_manyToUser_addMessage" />
+    <MESSAGE value="send_infoAbout_newMessages" />
+    <MESSAGE value="got_request_correspondence" />
+    <MESSAGE value="composite_key" />
+    <option name="LAST_COMMIT_MESSAGE" value="composite_key" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
-          <line>128</line>
-          <option name="timeStamp" value="60" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
-          <line>66</line>
+          <line>59</line>
           <option name="timeStamp" value="72" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
-          <line>71</line>
+          <line>64</line>
           <option name="timeStamp" value="73" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
-          <line>77</line>
+          <line>70</line>
           <option name="timeStamp" value="74" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
-          <line>53</line>
+          <line>46</line>
           <option name="timeStamp" value="77" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -274,26 +327,124 @@
           <line>154</line>
           <option name="timeStamp" value="91" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>301</line>
+          <option name="timeStamp" value="105" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>302</line>
+          <option name="timeStamp" value="106" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>303</line>
+          <option name="timeStamp" value="107" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>300</line>
+          <option name="timeStamp" value="108" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>297</line>
+          <option name="timeStamp" value="109" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>58</line>
+          <option name="timeStamp" value="110" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>127</line>
+          <option name="timeStamp" value="115" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>126</line>
+          <option name="timeStamp" value="116" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>128</line>
+          <option name="timeStamp" value="117" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>152</line>
+          <option name="timeStamp" value="121" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>147</line>
+          <option name="timeStamp" value="123" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>148</line>
+          <option name="timeStamp" value="124" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>149</line>
+          <option name="timeStamp" value="125" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
-          <line>76</line>
-          <properties class="org.chatServ.Db" method="addMessage">
+          <line>241</line>
+          <option name="timeStamp" value="135" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>242</line>
+          <option name="timeStamp" value="136" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>227</line>
+          <option name="timeStamp" value="139" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>228</line>
+          <option name="timeStamp" value="140" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>235</line>
+          <option name="timeStamp" value="144" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>236</line>
+          <option name="timeStamp" value="145" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>237</line>
+          <option name="timeStamp" value="150" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>239</line>
+          <option name="timeStamp" value="151" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/Db.java</url>
+          <line>240</line>
+          <option name="timeStamp" value="152" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
+          <line>137</line>
+          <properties class="org.chatServ.ThreadedEchoHandler" method="send_DB_request">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
-          <option name="timeStamp" value="71" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-field">
-          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
-          <line>29</line>
-          <properties field="outNet" class="org.chatServ.ThreadedEchoHandler" />
-          <option name="timeStamp" value="103" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-field">
-          <url>file://$PROJECT_DIR$/src/main/java/org/chatServ/ThreadedEchoHandler.java</url>
-          <line>30</line>
-          <properties field="brNet" class="org.chatServ.ThreadedEchoHandler" />
-          <option name="timeStamp" value="104" />
+          <option name="timeStamp" value="126" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

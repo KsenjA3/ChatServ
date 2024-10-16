@@ -22,10 +22,11 @@ class Db {
     private String commandMessage;
     private Query<Users> queryU;
     private Query<Messages> queryM;
+    private Query<MessagesUsers> queryMU;
 
     Db (String path){
         connector = new Connector(path);
-        commandU = " FROM Users WHERE userName = :user";
+        commandU = " FROM Users WHERE userName = :userName";
     }
 
     protected void createUserDB ( ThreadedEchoServer echoServer){
@@ -56,7 +57,6 @@ class Db {
     protected void addUser (String user_name, String password){
         try (Session session= connector.getSession()) {
             u = new Users(user_name, password, false);
-
             session.beginTransaction();
             session.persist(u);
             session.getTransaction().commit();
@@ -66,7 +66,7 @@ class Db {
     protected void updateOnline (String userName, boolean is_Online){
         try (Session session= connector.getSession()) {
             queryU = session.createQuery(commandU, Users.class);
-            queryU.setParameter("user", userName);
+            queryU.setParameter("userName", userName);
             u = queryU.getSingleResult();
             u.setOnline(is_Online);
 
@@ -76,89 +76,88 @@ class Db {
         }
     }
 
-
     protected void addMessage (String mess,  String fromUser,  List<String> toUsersList){
         try (Session session= connector.getSession()) {
             m= new Messages(mess);
 
             queryU = session.createQuery(commandU, Users.class);
-            queryU.setParameter("user", fromUser);
+            queryU.setParameter("userName", fromUser);
             u = queryU.getSingleResult();
-            m.setFromUser(u);
-
-//            List<Users> toUsers = new ArrayList<>();
-            queryU = session.createQuery(commandU, Users.class);
-            toUsersList.forEach(toUser->{
-                queryU.setParameter("user", toUser);
-                u = queryU.getSingleResult();
-//                m.add_oneUser_to_Message(u);
-//                toUsers.add(u);
-            });
-//            m.setToUsers(toUsers);
 
             session.beginTransaction();
-            session.persist(m);
+            u.add_oneMessage_to_FromUser(m);
+            session.persist(u);
+
+            queryU = session.createQuery(commandU, Users.class);
+            toUsersList.forEach(toUser->{
+                queryU.setParameter("userName", toUser);
+                u = queryU.getSingleResult();
+                u.add_oneMessage_to_ToUser(m);
+                session.persist(u);
+            });
             session.getTransaction().commit();
         }
     }
-//
-//    protected void setGotMessage (String mess,  String fromUser, String toUser){
-//        try (Session session= connector.getSession()) {
-//            queryU = session.createQuery(commandU, Users.class);
-//            queryU.setParameter("user", fromUser);
-//            int id_fromUser =queryU.getSingleResult().getId();
-//
-//            queryU = session.createQuery(commandU, Users.class);
-//            queryU.setParameter("user", toUser);
-//            int id_toUser =queryU.getSingleResult().getId();
-//
-//            commandMessage = """
-//                SELECT m
-//                FROM Messages m
-//                JOIN m.toUsers u
-//                WHERE u.id = :toUsers
-//                AND m.fromUser.id = :fromUser
-//                AND m.mess = :mess
-//                """;
-//            queryM = session.createQuery(commandMessage, Messages.class);
-//            queryM.setParameter("toUsers", id_toUser);
-//            queryM.setParameter("fromUser",id_fromUser);
-//            queryM.setParameter("mess",mess);
-//            m = queryM.getSingleResult();
-//            m.setGot(true);
-//
-//            session.beginTransaction();
-//            session.persist(m);
-//            session.getTransaction().commit();
-//        }
-//    }
-//
-//    protected boolean isNewMessagesExist(String toUser) {
-//        boolean isMessagesExist = false;
-//
-//        try (Session session= connector.getSession()) {
-//            queryU = session.createQuery(commandU, Users.class);
-//            queryU.setParameter("user", toUser);
-//            int id_user = queryU.getSingleResult().getId();
-//
-//            commandMessage = """
-//                SELECT m
-//                FROM Messages m
-//                JOIN m.toUsers u
-//                WHERE u.id = :toUsers
-//                AND m.isGot= :isGot
-//                """;
-//
-//            queryM = session.createQuery(commandMessage, Messages.class);
-//            queryM.setParameter("toUsers", id_user);
-//            queryM.setParameter("isGot", false);
-//            if(queryM.getResultList().size()>0)
-//                isMessagesExist=true;
-//        }
-//        return isMessagesExist;
-//    }
-//
-//
+
+    protected void setGotMessage (String mess,  String fromUser, String toUser){
+        try (Session session= connector.getSession()) {
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("userName", fromUser);
+            int id_fromUser =queryU.getSingleResult().getId();
+
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("userName", toUser);
+            int id_toUser =queryU.getSingleResult().getId();
+
+            commandMessage = """
+               FROM MessagesUsers as mu
+               WHERE
+               mu.user.id= :toUser
+               AND
+               mu.message.fromUser.id = :fromUser
+               AND 
+               mu.message.mess = :mess
+                """;
+            queryMU = session.createQuery(commandMessage, MessagesUsers.class);
+            queryMU.setParameter("toUser", id_toUser);
+            queryMU.setParameter("fromUser",id_fromUser);
+            queryMU.setParameter("mess",mess);
+
+            MessagesUsers mu = queryMU.getSingleResult();
+            mu.setGot(true);
+
+            session.beginTransaction();
+            session.persist(mu);
+            session.getTransaction().commit();
+        }
+    }
+
+    protected boolean isNewMessagesExist(String toUser) {
+        boolean isMessagesExist = false;
+
+        try (Session session= connector.getSession()) {
+            queryU = session.createQuery(commandU, Users.class);
+            queryU.setParameter("userName", toUser);
+            int id_user = queryU.getSingleResult().getId();
+
+            commandMessage = """
+                FROM MessagesUsers mu
+                WHERE
+                mu.user.id= :toUser
+                AND 
+                mu.isGot= :isGot
+                """;
+            queryMU = session.createQuery(commandMessage, MessagesUsers.class);
+            queryMU.setParameter("toUser", id_user);
+            queryMU.setParameter("isGot", false);
+
+            if(queryMU.getResultList().size()>0)
+                isMessagesExist=true;
+        }
+        return isMessagesExist;
+    }
+
+
 //    protected String sendRequest(String user, String type, String collocutor, String period ) {
 //        String answer="";
 //

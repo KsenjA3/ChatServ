@@ -28,7 +28,6 @@
         <mapping class="org.chatServ.Messages"/>
         <mapping class="org.chatServ.Users"/>
         <mapping class="org.chatServ.MessagesUsers"/>
-        <mapping class="org.chatServ.MessagesUsersID"/>
 
     </session-factory>
 
