@@ -2,6 +2,7 @@ package org.chatServ;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -148,10 +149,7 @@ System.out.println("-----------------------------------------------");
                 System.out.println("type= "+type);
                 System.out.println("period= "+period);
                 System.out.println("collocutor= "+collocutor);
-//            answer=db.sendRequest( user, type, collocutor, period);
-
-//запись о прочтении сообщения
-
+            answer=db.sendRequest( user, type, collocutor, period);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -292,9 +290,22 @@ System.out.println("-----------------------------------------------");
                 String response_user = br.readLine().trim();
                 String response_message = br.readLine().trim();
 
-                if (response_command.equals("command:" + command) &&
-                        response_user.equals("user:" + to_user) &&
+                if (response_command.equals("command:" + command) && response_user.equals("user:" + to_user) &&
                         response_message.equals("message:" + message)) {
+
+                    // запись в БД о прочтении сообщения + PreUpdate добавляет время о прочтении
+                    if (command.equals("correspondence")){
+                        ObjectMapper mapper = new ObjectMapper();
+                        HashMap<String, String> mapReceivedMessages=  mapper.readValue(message, new TypeReference<HashMap<String, String>>() {});
+                        mapReceivedMessages.forEach((k,mess)->{
+                            if (k.startsWith("<html>FROM ") && !k.contains("familiarized")){
+                                k=StringUtils.removeStart(k, "<html>FROM ");
+                                int lastIndexFromNameUser = k.lastIndexOf(":");
+                                String fromUser=k.substring(0,lastIndexFromNameUser);
+                                db.setGotMessage (mess,fromUser, to_user);
+                            }
+                        });
+                    }
                     System.out.println("+++++++++++++++++++++++++++++++++");
                     return;
                 } else {

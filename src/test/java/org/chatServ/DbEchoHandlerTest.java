@@ -1,6 +1,7 @@
 package org.chatServ;
 
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -71,8 +72,6 @@ class DbEchoHandlerTest {
     void closeSession() {
         if (session != null) session.close();
     }
-
-
 
     @Test
     void fillTableMessages() {
@@ -171,68 +170,99 @@ class DbEchoHandlerTest {
         assertEquals(5, queryMU.getResultList().size());
     }
 
-//    @Test
-//    void sendRequest() {
-//        userListRegistration = new HashMap<>();
-//        userListRegistration.put("userSendRequest1", "aaa");
-//        userListRegistration.put("userSendRequest2", "bbb");
-//        userListRegistration.put("userSendRequest3", "ccc");
-//
-//        db.addUser("userSendRequest1", "aaa");
-//        db.addUser("userSendRequest2", "bbb");
-//        db.addUser("userSendRequest3", "ccc");
-//
-//        List<String> receiversListNewMess;
-//        threadedEchoHandler.setEchoServer(echoServer);
-//        Mockito.when(echoServer.getUserListRegistration()).thenReturn(userListRegistration);
-//
-//        threadedEchoHandler.fillTableMessages("mess_from3_to2", "userSendRequest3",
-//                "<html>userSendRequest2</html>");
-//        threadedEchoHandler.fillTableMessages("mess_from2_to3", "userSendRequest2",
-//                "<html>userSendRequest3</html>");
-//        threadedEchoHandler.fillTableMessages("mess_from3_to_list(1,2)", "userSendRequest3",
-//                "<html>userSendRequest2<br>userSendRequest1</html>");
-//        threadedEchoHandler.fillTableMessages("messAll_from1", "userSendRequest1",
-//                "<html>to all</html>");
-//
-//        db.setGotMessage("mess_from3_to2","userSendRequest3","userSendRequest2");
+    @Test
+    void sendRequest() {
+        userListRegistration = new HashMap<>();
+        userListRegistration.put("userSendRequest1", "aaa");
+        userListRegistration.put("userSendRequest2", "bbb");
+        userListRegistration.put("userSendRequest3", "ccc");
+
+        db.addUser("userSendRequest1", "aaa");
+        db.addUser("userSendRequest2", "bbb");
+        db.addUser("userSendRequest3", "ccc");
+
+        threadedEchoHandler.setEchoServer(echoServer);
+        Mockito.when(echoServer.getUserListRegistration()).thenReturn(userListRegistration);
+
+        threadedEchoHandler.fillTableMessages("mess_from3_to2", "userSendRequest3",
+                "<html>userSendRequest2</html>");
+        threadedEchoHandler.fillTableMessages("mess_from2_to3", "userSendRequest2",
+                "<html>userSendRequest3</html>");
+        threadedEchoHandler.fillTableMessages("mess_from3_to_list(1,2)", "userSendRequest3",
+                "<html>userSendRequest2<br>userSendRequest1</html>");
+        threadedEchoHandler.fillTableMessages("messAll_from1", "userSendRequest1",
+                "<html>to all</html>");
+
+        db.setGotMessage("mess_from3_to2","userSendRequest3","userSendRequest2");
 //        db.setGotMessage("mess_from2_to3","userSendRequest2","userSendRequest3");
-//        db.setGotMessage("mess_from3_to_list(1,2)","userSendRequest3","userSendRequest1");
-//        db.setGotMessage("messAll_from1","userSendRequest1","userSendRequest3");
-//
-//        /**
-//         from        to      message                         id_mess        isGot
-//         3           2      mess_from3_to2                    1                1
-//         2           3      mess_from2_to3                    2                1
-//         |3          1      mess_from3_to_list(1,2)           3                1
-//         |3          2      mess_from3_to_list(1,2)           3                0
-//         1           2      messAll_from1                     4                0
-//         1           3      messAll_from1                     4                1
-//         **/
-//
-//        // mess_from3_to2  -  mess_from3_to_list(1,2)
-////        db.sendRequest( "userSendRequest2",  "received",  "userSendRequest3",  "all time" );
-//
-//
-//        // mess_from3_to2  -  mess_from3_to_list(1,2)  -  messAll_from1
-////        db.sendRequest( "userSendRequest2",  "received",  "all",  "all time" );
-//
-//        // mess_from3_to2  -  mess_from3_to_list(1,2)
-////        db.sendRequest( "userSendRequest3",  "sent",  "userSendRequest2",  "all time" );
-//
-//
-//        // mess_from3_to2  -  mess_from3_to_list(1,2)  !list-2
-////        db.sendRequest( "userSendRequest3",  "sent",  "all",  "all time" );
-//
-//        // mess_from3_to2  -  mess_from2_to3  -  mess_from3_to_list(1,2)
-////        db.sendRequest( "userSendRequest3",  "all",  "userSendRequest2",  "all time" );
-//
-//        // mess_from3_to2  -  mess_from2_to3  -  mess_from3_to_list(1,2)  -  messAll_from1
-////        db.sendRequest( "userSendRequest3",  "all",  "all",  "all time" );
-//
-//        // mess_from3_to_list(1,2)
-////        db.sendRequest( "userSendRequest2",  "unread",  "userSendRequest3",  "all time" );
-//
-//    }
+        db.setGotMessage("mess_from3_to_list(1,2)","userSendRequest3","userSendRequest1");
+        db.setGotMessage("messAll_from1","userSendRequest1","userSendRequest3");
+
+        /**
+         from        to      message                         id_mess        isGot
+         3           2      mess_from3_to2                    1                1
+         2           3      mess_from2_to3                    2                0
+         |3          1      mess_from3_to_list(1,2)           3                1
+         |3          2      mess_from3_to_list(1,2)           3                0
+         1           2      messAll_from1                     4                0
+         1           3      messAll_from1                     4                1
+         **/
+        String result;
+        // from3to2:            mess_from3_to2  -  mess_from3_to_list(1,2)
+        result = db.sendRequest( "userSendRequest2",  "received",  "userSendRequest3",  "all time" );
+        assertTrue(result.contains("mess_from3_to2"));
+        assertTrue(result.contains("mess_from3_to_list(1,2)"));
+        assertFalse(result.contains("mess_from2_to3"));
+        assertFalse(result.contains("messAll_from1"));
+
+        // to2:                 mess_from3_to2  -  mess_from3_to_list(1,2)  -  messAll_from1
+        result = db.sendRequest( "userSendRequest2",  "received",  "all",  "all time" );
+        assertTrue(result.contains("mess_from3_to2"));
+        assertTrue(result.contains("mess_from3_to_list(1,2)"));
+        assertFalse(result.contains("mess_from2_to3"));
+        assertTrue(result.contains("messAll_from1"));
+
+        // from3to2:            mess_from3_to2  -  mess_from3_to_list(1,2)
+        result = db.sendRequest( "userSendRequest3",  "sent",  "userSendRequest2",  "all time" );
+        assertTrue(result.contains("mess_from3_to2"));
+        assertTrue(result.contains("mess_from3_to_list(1,2)"));
+        assertFalse(result.contains("mess_from2_to3"));
+        assertFalse(result.contains("messAll_from1"));
+
+        // from3:               mess_from3_to2  -  mess_from3_to_list(1,2)-!list-2
+        result = db.sendRequest( "userSendRequest3",  "sent",  "all",  "all time" );
+        assertTrue(result.contains("mess_from3_to2"));
+        assertEquals(2,StringUtils.countMatches(result, "mess_from3_to_list(1,2)"));
+        assertFalse(result.contains("mess_from2_to3"));
+        assertFalse(result.contains("messAll_from1"));
+
+        // from3to2/from2to3:   mess_from3_to2  -  mess_from2_to3  -  mess_from3_to_list(1,2)
+        result = db.sendRequest( "userSendRequest3",  "all",  "userSendRequest2",  "all time" );
+        assertTrue(result.contains("mess_from3_to2"));
+        assertTrue(result.contains("mess_from3_to_list(1,2)"));
+        assertTrue(result.contains("mess_from2_to3"));
+        assertFalse(result.contains("messAll_from1"));
+
+        // from3/to3:           mess_from3_to2  -  mess_from2_to3  -  mess_from3_to_list(1,2)-!list-2  -  messAll_from1
+        result = db.sendRequest( "userSendRequest3",  "all",  "all",  "all time" );
+        assertTrue(result.contains("mess_from3_to2"));
+        assertEquals(2,StringUtils.countMatches(result, "mess_from3_to_list(1,2)"));
+        assertTrue(result.contains("mess_from2_to3"));
+        assertTrue(result.contains("messAll_from1"));
+
+        // from3to2-unread:     mess_from3_to_list(1,2)
+        result = db.sendRequest( "userSendRequest2",  "unread",  "userSendRequest3",  "all time" );
+        assertFalse(result.contains("mess_from3_to2"));
+        assertTrue(result.contains("mess_from3_to_list(1,2)"));
+        assertFalse(result.contains("mess_from2_to3"));
+        assertFalse(result.contains("messAll_from1"));
+
+        // to2-unread:          messAll_from1  -  mess_from3_to_list(1,2)
+        result = db.sendRequest( "userSendRequest2",  "unread",  "all",  "all time" );
+        assertFalse(result.contains("mess_from3_to2"));
+        assertTrue(result.contains("mess_from3_to_list(1,2)"));
+        assertFalse(result.contains("mess_from2_to3"));
+        assertTrue(result.contains("messAll_from1"));
+    }
 
  }

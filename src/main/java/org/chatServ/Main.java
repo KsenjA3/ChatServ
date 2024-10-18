@@ -16,8 +16,8 @@ public class Main {
 
     public static void main(String[] args) {
 //        Connector con = new Connector("hibernate.cfg.xml");
-        Db db = new Db("hibernate.cfg.xml");
-        db.setGotMessage("from 2 to 1,3","222","333");
+//        Db db = new Db("hibernate.cfg.xml");
+//        db.setGotMessage("from 2 to 1,3","222","333");
 
 //        db.addUser("444", "444");
 //        db.addUser("222", "222");
@@ -51,5 +51,13 @@ public class Main {
 
 //            session.getTransaction().commit();
 //        }
+
+
+
+        String str = "{\"<html>\"mess_from3_to_list(1,2)\"TO userSendReq</html>\":\"mess_from3_to_list(1,2)\",\"<hton 17.TO usrizemess_from3_to_list(1,2)d on 17.10.2024 a}";
+
+        int i= StringUtils.countMatches(str, "mess_from3_to_list(1,2)");
+
+        System.out.println(i);
     }
 }
