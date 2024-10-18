@@ -233,7 +233,7 @@ class Db {
             }
 
             // сортировка по timeSend
-            command.append("ORDER BY mu.message.timeSend");
+//            command.append("ORDER BY mu.message.timeSend");
 
             commandMessage=command.toString();
             queryMU = session.createQuery(commandMessage, MessagesUsers.class);
@@ -257,26 +257,27 @@ class Db {
             messagesUsersList.forEach( mu-> {
                 String interlocutor="<html>";
                 if(user.equals(mu.getUser().getUserName())) {
-                    interlocutor = interlocutor + String.format("FROM %s: on %s",
-                            mu.getMessage().getFromUser().getUserName(),
-                            mu.getMessage().getTimeSend().format(DateTimeFormatter.ofPattern(pattern)));
+                    interlocutor = interlocutor + String.format("on %s-FROM %s:",
+                        mu.getMessage().getTimeSend().format(DateTimeFormatter.ofPattern(pattern)),
+                        mu.getMessage().getFromUser().getUserName());
                 }
                 else if(user.equals(mu.getMessage().getFromUser().getUserName()))
-                        interlocutor=interlocutor+String.format("TO %s: on %s",
-                            mu.getUser().getUserName(),
-                            mu.getMessage().getTimeSend().format(DateTimeFormatter.ofPattern(pattern)));
+                    interlocutor=interlocutor+String.format("on %s-TO %s:",
+                        mu.getMessage().getTimeSend().format(DateTimeFormatter.ofPattern(pattern)),
+                        mu.getUser().getUserName());
 
                 if (mu.isGot())
-                        interlocutor=interlocutor+String.format("<br>(familiarized on %s)",
-                            mu.getTimeReceive().format(DateTimeFormatter.ofPattern(pattern)));
+                    interlocutor=interlocutor+String.format("<br>(familiarized on %s)",
+                        mu.getTimeReceive().format(DateTimeFormatter.ofPattern(pattern)));
 
                 interlocutor=interlocutor+"</html>";
                 correspondence.put(interlocutor,mu.getMessage().getMess()) ;
             });
+
             System.out.println("___________________________________________");
             System.out.println("correspondence_to_JSON"+correspondence);
 
-            // преобразуем HashMap в строку JSON для пересылки
+            // преобразуем Map в строку JSON для пересылки
             answer = correspondence_to_JSON ();
         }
         return answer;
